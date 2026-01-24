@@ -1,0 +1,152 @@
+/* Speech Bubbles Plugin Styles */
+
+.speech-bubbles-container {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 10px 0;
+	max-width: 100%;
+}
+
+.speech-bubble-wrapper {
+	display: flex;
+	flex-direction: column;
+	max-width: 75%;
+	margin-bottom: 4px;
+}
+
+.speech-bubble-wrapper.owner {
+	align-self: flex-end;
+	align-items: flex-end;
+}
+
+.speech-bubble-wrapper.other {
+	align-self: flex-start;
+	align-items: flex-start;
+}
+
+.speech-bubble-name {
+	font-size: 0.75em;
+	font-weight: 600;
+	margin-bottom: 2px;
+	margin-left: 12px;
+	opacity: 0.8;
+}
+
+.speech-bubble {
+	padding: 10px 14px;
+	border-radius: 18px;
+	position: relative;
+	word-wrap: break-word;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.speech-bubble.owner {
+	border-bottom-right-radius: 4px;
+}
+
+.speech-bubble.other {
+	border-bottom-left-radius: 4px;
+}
+
+.speech-bubble-message {
+	font-size: 0.95em;
+	line-height: 1.4;
+}
+
+.speech-bubbles-regular-text {
+	margin: 8px 0;
+	color: var(--text-muted);
+	font-style: italic;
+	text-align: center;
+}
+
+/* Dark theme adjustments */
+.theme-dark .speech-bubble.other {
+	color: var(--text-normal) !important;
+}
+
+.theme-dark .speech-bubble-name {
+	opacity: 0.9;
+}
+
+/* Ensure proper spacing with other content */
+.speech-bubbles-container + p,
+p + .speech-bubbles-container {
+	margin-top: 1em;
+}
+
+/* Animation for bubble appearance */
+@keyframes bubbleIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.speech-bubble-wrapper {
+	animation: bubbleIn 0.2s ease-out;
+}
+
+/* Hover effect */
+.speech-bubble:hover {
+	filter: brightness(0.97);
+}
+
+/* Settings page styling */
+.speech-bubbles-usage {
+	margin-top: 20px;
+	padding: 15px;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.speech-bubbles-usage ol {
+	margin-left: 20px;
+}
+
+.speech-bubbles-usage li {
+	margin-bottom: 8px;
+}
+
+.speech-bubbles-usage pre {
+	background-color: var(--background-primary);
+	padding: 10px;
+	border-radius: 4px;
+	overflow-x: auto;
+}
+
+.speech-bubbles-usage code {
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+	.speech-bubble-wrapper {
+		max-width: 85%;
+	}
+
+	.speech-bubble {
+		padding: 8px 12px;
+	}
+
+	.speech-bubble-message {
+		font-size: 0.9em;
+	}
+}
+
+/* Consecutive messages from same speaker - tighter spacing */
+.speech-bubble-wrapper.owner + .speech-bubble-wrapper.owner,
+.speech-bubble-wrapper.other + .speech-bubble-wrapper.other {
+	margin-top: -4px;
+}
+
+.speech-bubble-wrapper.owner + .speech-bubble-wrapper.owner .speech-bubble-name,
+.speech-bubble-wrapper.other + .speech-bubble-wrapper.other .speech-bubble-name {
+	display: none;
+}

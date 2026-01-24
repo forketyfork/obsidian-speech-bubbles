@@ -1,0 +1,16 @@
+# Build output
+main.js
+
+# npm
+node_modules
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.js.map
