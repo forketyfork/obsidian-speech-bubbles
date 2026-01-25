@@ -8,31 +8,32 @@
 	max-width: 100%;
 }
 
-.speech-bubble-wrapper {
+.speech-bubbles-wrapper {
 	display: flex;
 	flex-direction: column;
 	max-width: 75%;
 	margin-bottom: 4px;
+	animation: speech-bubbles-fade-in 0.2s ease-out;
 }
 
-.speech-bubble-wrapper.owner {
+.speech-bubbles-wrapper.speech-bubbles-owner {
 	align-self: flex-end;
 	align-items: flex-end;
 }
 
-.speech-bubble-wrapper.other {
+.speech-bubbles-wrapper.speech-bubbles-other {
 	align-self: flex-start;
 	align-items: flex-start;
 }
 
-.speech-bubble-name {
+.speech-bubbles-name {
 	font-size: 0.7em;
 	font-weight: 600;
 	margin-bottom: 4px;
 	opacity: 0.7;
 }
 
-.speech-bubble {
+.speech-bubbles-bubble {
 	padding: 10px 14px;
 	border-radius: 18px;
 	position: relative;
@@ -42,15 +43,15 @@
 		0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
-.speech-bubble.owner {
+.speech-bubbles-bubble.speech-bubbles-owner {
 	border-bottom-right-radius: 4px;
 }
 
-.speech-bubble.other {
+.speech-bubbles-bubble.speech-bubbles-other {
 	border-bottom-left-radius: 4px;
 }
 
-.speech-bubble-message {
+.speech-bubbles-message {
 	font-size: 0.95em;
 	line-height: 1.4;
 }
@@ -62,8 +63,8 @@
 	text-align: center;
 }
 
-/* Dark theme adjustments - keep black text on light pastel backgrounds */
-.theme-dark .speech-bubble-name {
+/* Dark theme adjustments */
+.theme-dark .speech-bubbles-name {
 	opacity: 0.8;
 }
 
@@ -74,7 +75,7 @@ p + .speech-bubbles-container {
 }
 
 /* Animation for bubble appearance */
-@keyframes bubbleIn {
+@keyframes speech-bubbles-fade-in {
 	from {
 		opacity: 0;
 		transform: translateY(10px);
@@ -85,12 +86,8 @@ p + .speech-bubbles-container {
 	}
 }
 
-.speech-bubble-wrapper {
-	animation: bubbleIn 0.2s ease-out;
-}
-
 /* Hover effect */
-.speech-bubble:hover {
+.speech-bubbles-bubble:hover {
 	filter: brightness(0.97);
 }
 
@@ -124,26 +121,26 @@ p + .speech-bubbles-container {
 
 /* Mobile responsiveness */
 @media (max-width: 600px) {
-	.speech-bubble-wrapper {
+	.speech-bubbles-wrapper {
 		max-width: 85%;
 	}
 
-	.speech-bubble {
+	.speech-bubbles-bubble {
 		padding: 8px 12px;
 	}
 
-	.speech-bubble-message {
+	.speech-bubbles-message {
 		font-size: 0.9em;
 	}
 }
 
 /* Consecutive messages from same speaker - tighter spacing */
-.speech-bubble-wrapper.owner + .speech-bubble-wrapper.owner,
-.speech-bubble-wrapper.other + .speech-bubble-wrapper.other {
+.speech-bubbles-wrapper.speech-bubbles-owner + .speech-bubbles-wrapper.speech-bubbles-owner,
+.speech-bubbles-wrapper.speech-bubbles-other + .speech-bubbles-wrapper.speech-bubbles-other {
 	margin-top: -4px;
 }
 
 /* View action button active state */
-.view-action.is-active {
+.speech-bubbles-toggle.speech-bubbles-active {
 	color: var(--interactive-accent);
 }

@@ -75,6 +75,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 				const button = view.addAction("message-circle", "Toggle speech bubbles", () => {
 					this.toggleSpeechBubbles(view);
 				});
+				button.addClass("speech-bubbles-toggle");
 				this.viewActionButtons.set(view, button);
 				this.updateButtonState(view);
 			}
@@ -86,7 +87,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 		if (!button || !view.file) return;
 
 		const isEnabled = this.enabledFiles.has(view.file.path);
-		button.toggleClass("is-active", isEnabled);
+		button.toggleClass("speech-bubbles-active", isEnabled);
 	}
 
 	private updateAllButtonStates() {
@@ -170,7 +171,12 @@ export default class SpeechBubblesPlugin extends Plugin {
 			return;
 		}
 
-		const lines = sectionInfo.text.split("\n").slice(sectionInfo.lineStart, sectionInfo.lineEnd + 1);
+		const allLines = sectionInfo.text.split("\n");
+		const lines = allLines.slice(sectionInfo.lineStart, sectionInfo.lineEnd + 1);
+
+		if (lines.length === 0) {
+			return;
+		}
 
 		const pattern = /^\[\[([^\]]+)\]\]:\s*(.*)$/;
 
@@ -189,23 +195,42 @@ export default class SpeechBubblesPlugin extends Plugin {
 		const container = document.createElement("div");
 		container.className = "speech-bubbles-container";
 
+		let nonTranscriptionLines: string[] = [];
+
+		const flushNonTranscriptionLines = () => {
+			if (nonTranscriptionLines.length === 0) return;
+
+			const content = nonTranscriptionLines.join("\n");
+			if (content.trim()) {
+				const textEl = document.createElement("div");
+				textEl.className = "speech-bubbles-regular-text";
+				try {
+					void MarkdownRenderer.render(this.app, content, textEl, filePath, this.renderComponent);
+				} catch {
+					textEl.textContent = content;
+				}
+				container.appendChild(textEl);
+			}
+			nonTranscriptionLines = [];
+		};
+
 		for (const line of lines) {
-			const trimmedLine = line.trim();
-			const match = trimmedLine.match(pattern);
+			const match = line.trim().match(pattern);
 
 			if (match) {
+				flushNonTranscriptionLines();
+
 				const speakerName = match[1];
 				const message = match[2];
 
 				const bubble = this.createBubble(speakerName, message, filePath);
 				container.appendChild(bubble);
-			} else if (trimmedLine) {
-				const textEl = document.createElement("p");
-				textEl.className = "speech-bubbles-regular-text";
-				void MarkdownRenderer.render(this.app, trimmedLine, textEl, filePath, this.renderComponent);
-				container.appendChild(textEl);
+			} else {
+				nonTranscriptionLines.push(line);
 			}
 		}
+
+		flushNonTranscriptionLines();
 
 		el.empty();
 		el.appendChild(container);
@@ -216,24 +241,28 @@ export default class SpeechBubblesPlugin extends Plugin {
 		const color = this.getSpeakerColor(speakerName);
 
 		const wrapper = document.createElement("div");
-		wrapper.className = `speech-bubble-wrapper ${isOwnerBubble ? "owner" : "other"}`;
+		wrapper.className = `speech-bubbles-wrapper ${isOwnerBubble ? "speech-bubbles-owner" : "speech-bubbles-other"}`;
 
 		const bubble = document.createElement("div");
-		bubble.className = `speech-bubble ${isOwnerBubble ? "owner" : "other"}`;
+		bubble.className = `speech-bubbles-bubble ${isOwnerBubble ? "speech-bubbles-owner" : "speech-bubbles-other"}`;
 
 		const gradientDirection = isOwnerBubble ? "135deg" : "135deg";
 		bubble.style.background = `linear-gradient(${gradientDirection}, ${color.start}, ${color.end})`;
 		bubble.style.color = isOwnerBubble ? "white" : "#1F2937";
 
 		const nameLabel = document.createElement("div");
-		nameLabel.className = "speech-bubble-name";
+		nameLabel.className = "speech-bubbles-name";
 		nameLabel.textContent = speakerName;
 		nameLabel.style.color = isOwnerBubble ? "rgba(255, 255, 255, 0.9)" : darkenColor(color.end);
 		bubble.appendChild(nameLabel);
 
 		const messageEl = document.createElement("div");
-		messageEl.className = "speech-bubble-message";
-		void MarkdownRenderer.render(this.app, message, messageEl, sourcePath, this.renderComponent);
+		messageEl.className = "speech-bubbles-message";
+		try {
+			void MarkdownRenderer.render(this.app, message, messageEl, sourcePath, this.renderComponent);
+		} catch {
+			messageEl.textContent = message;
+		}
 		bubble.appendChild(messageEl);
 
 		wrapper.appendChild(bubble);
@@ -303,7 +332,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 			text: "Format your transcription with lines like: [[Speaker Name]]: Message text",
 		});
 		list.createEl("li", {
-			text: "Click the message bubble icon in the ribbon or use the command palette to toggle speech bubbles view",
+			text: "Click the message bubble icon in the view header (top right) or use the command palette to toggle speech bubbles view",
 		});
 		list.createEl("li", {
 			text: "Switch to Reading view to see the bubbles",
