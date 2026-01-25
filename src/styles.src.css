@@ -26,11 +26,10 @@
 }
 
 .speech-bubble-name {
-	font-size: 0.75em;
+	font-size: 0.7em;
 	font-weight: 600;
-	margin-bottom: 2px;
-	margin-left: 12px;
-	opacity: 0.8;
+	margin-bottom: 4px;
+	opacity: 0.7;
 }
 
 .speech-bubble {
@@ -61,13 +60,9 @@
 	text-align: center;
 }
 
-/* Dark theme adjustments */
-.theme-dark .speech-bubble.other {
-	color: var(--text-normal) !important;
-}
-
+/* Dark theme adjustments - keep black text on light pastel backgrounds */
 .theme-dark .speech-bubble-name {
-	opacity: 0.9;
+	opacity: 0.8;
 }
 
 /* Ensure proper spacing with other content */
@@ -144,9 +139,4 @@ p + .speech-bubbles-container {
 .speech-bubble-wrapper.owner + .speech-bubble-wrapper.owner,
 .speech-bubble-wrapper.other + .speech-bubble-wrapper.other {
 	margin-top: -4px;
-}
-
-.speech-bubble-wrapper.owner + .speech-bubble-wrapper.owner .speech-bubble-name,
-.speech-bubble-wrapper.other + .speech-bubble-wrapper.other .speech-bubble-name {
-	display: none;
 }

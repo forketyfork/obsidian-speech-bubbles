@@ -198,13 +198,11 @@ export default class SpeechBubblesPlugin extends Plugin {
 			bubble.style.color = "#000000";
 		}
 
-		if (!isOwner) {
-			const nameLabel = document.createElement("div");
-			nameLabel.className = "speech-bubble-name";
-			nameLabel.textContent = speakerName;
-			nameLabel.style.color = darkenColor(color);
-			wrapper.appendChild(nameLabel);
-		}
+		const nameLabel = document.createElement("div");
+		nameLabel.className = "speech-bubble-name";
+		nameLabel.textContent = speakerName;
+		nameLabel.style.color = isOwner ? "rgba(255, 255, 255, 0.85)" : darkenColor(color);
+		bubble.appendChild(nameLabel);
 
 		const messageEl = document.createElement("div");
 		messageEl.className = "speech-bubble-message";
