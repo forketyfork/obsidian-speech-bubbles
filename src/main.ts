@@ -26,17 +26,13 @@ export default class SpeechBubblesPlugin extends Plugin {
 	private colorIndex = 0;
 	private enabledFiles: Set<string> = new Set();
 	private renderComponent: Component;
+	private viewActionButtons: WeakMap<MarkdownView, HTMLElement> = new WeakMap();
 
 	async onload() {
 		await this.loadSettings();
 
 		this.renderComponent = new Component();
 		this.renderComponent.load();
-
-		// Add ribbon icon to toggle speech bubbles view
-		this.addRibbonIcon("message-circle", "Toggle Speech Bubbles", () => {
-			this.toggleSpeechBubbles();
-		});
 
 		// Add command to toggle speech bubbles
 		this.addCommand({
@@ -52,6 +48,16 @@ export default class SpeechBubblesPlugin extends Plugin {
 			this.processTranscription(el, ctx);
 		});
 
+		// Add view action buttons to existing and new markdown views
+		this.app.workspace.onLayoutReady(() => {
+			this.addViewActionButtons();
+		});
+		this.registerEvent(
+			this.app.workspace.on("layout-change", () => {
+				this.addViewActionButtons();
+			})
+		);
+
 		// Add settings tab
 		this.addSettingTab(new SpeechBubblesSettingTab(this.app, this));
 	}
@@ -62,6 +68,35 @@ export default class SpeechBubblesPlugin extends Plugin {
 		this.renderComponent.unload();
 	}
 
+	private addViewActionButtons() {
+		this.app.workspace.iterateAllLeaves(leaf => {
+			const view = leaf.view;
+			if (view instanceof MarkdownView && !this.viewActionButtons.has(view)) {
+				const button = view.addAction("message-circle", "Toggle speech bubbles", () => {
+					this.toggleSpeechBubbles(view);
+				});
+				this.viewActionButtons.set(view, button);
+				this.updateButtonState(view);
+			}
+		});
+	}
+
+	private updateButtonState(view: MarkdownView) {
+		const button = this.viewActionButtons.get(view);
+		if (!button || !view.file) return;
+
+		const isEnabled = this.enabledFiles.has(view.file.path);
+		button.toggleClass("is-active", isEnabled);
+	}
+
+	private updateAllButtonStates() {
+		this.app.workspace.iterateAllLeaves(leaf => {
+			if (leaf.view instanceof MarkdownView) {
+				this.updateButtonState(leaf.view);
+			}
+		});
+	}
+
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, (await this.loadData()) as SpeechBubblesSettings);
 	}
@@ -70,8 +105,8 @@ export default class SpeechBubblesPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	private toggleSpeechBubbles() {
-		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+	private toggleSpeechBubbles(view?: MarkdownView) {
+		const activeView = view ?? this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (!activeView) {
 			return;
 		}
@@ -92,6 +127,9 @@ export default class SpeechBubblesPlugin extends Plugin {
 		// Reset color map when toggling
 		this.speakerColorMap.clear();
 		this.colorIndex = 0;
+
+		// Update button states
+		this.updateAllButtonStates();
 
 		// Force re-render by switching mode
 		const currentMode = activeView.getMode();

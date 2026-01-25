@@ -140,3 +140,8 @@ p + .speech-bubbles-container {
 .speech-bubble-wrapper.other + .speech-bubble-wrapper.other {
 	margin-top: -4px;
 }
+
+/* View action button active state */
+.view-action.is-active {
+	color: var(--interactive-accent);
+}
