@@ -5,6 +5,6 @@
 	"minAppVersion": "0.15.0",
 	"description": "Renders transcription notes as message app style speech bubbles, similar to Apple Messages.",
 	"author": "Your Name",
-	"authorUrl": "",
+	"authorUrl": "https://github.com/forketyfork/obsidian-speech-bubbles",
 	"isDesktopOnly": false
 }

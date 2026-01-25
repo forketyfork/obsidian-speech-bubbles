@@ -5,6 +5,8 @@ import {
 	PluginSettingTab,
 	Setting,
 	MarkdownPostProcessorContext,
+	MarkdownRenderer,
+	Component,
 } from "obsidian";
 
 interface SpeechBubblesSettings {
@@ -36,9 +38,13 @@ export default class SpeechBubblesPlugin extends Plugin {
 	private speakerColorMap: Map<string, string> = new Map();
 	private colorIndex = 0;
 	private enabledFiles: Set<string> = new Set();
+	private renderComponent: Component;
 
 	async onload() {
 		await this.loadSettings();
+
+		this.renderComponent = new Component();
+		this.renderComponent.load();
 
 		// Add ribbon icon to toggle speech bubbles view
 		this.addRibbonIcon("message-circle", "Toggle Speech Bubbles", () => {
@@ -66,9 +72,9 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	onunload() {
-		// Clean up
 		this.enabledFiles.clear();
 		this.speakerColorMap.clear();
+		this.renderComponent.unload();
 	}
 
 	async loadSettings() {
@@ -169,97 +175,66 @@ export default class SpeechBubblesPlugin extends Plugin {
 	) {
 		const filePath = ctx.sourcePath;
 
-		// Only process if speech bubbles are enabled for this file
 		if (!this.enabledFiles.has(filePath)) {
 			return;
 		}
 
-		// Pattern to match [[Speaker Name]]: Message
-		const pattern = /^\[\[([^\]]+)\]\]:\s*(.*)$/;
+		const sectionInfo = ctx.getSectionInfo(el);
+		if (!sectionInfo) {
+			return;
+		}
 
-		// Process paragraphs
-		const paragraphs = el.querySelectorAll("p");
-
-		paragraphs.forEach((p) => {
-			const text = p.textContent || "";
-			const lines = text.split("\n");
-			let hasTranscription = false;
-
-			// Check if any line matches the pattern
-			for (const line of lines) {
-				if (pattern.test(line.trim())) {
-					hasTranscription = true;
-					break;
-				}
-			}
-
-			if (!hasTranscription) {
-				return;
-			}
-
-			// Create a container for the bubbles
-			const container = document.createElement("div");
-			container.className = "speech-bubbles-container";
-
-			// Process each line
-			for (const line of lines) {
-				const trimmedLine = line.trim();
-				const match = trimmedLine.match(pattern);
-
-				if (match) {
-					const speakerName = match[1];
-					const message = match[2];
-
-					const bubble = this.createBubble(speakerName, message);
-					container.appendChild(bubble);
-				} else if (trimmedLine) {
-					// Non-matching lines are rendered as regular text
-					const textEl = document.createElement("p");
-					textEl.textContent = trimmedLine;
-					textEl.className = "speech-bubbles-regular-text";
-					container.appendChild(textEl);
-				}
-			}
-
-			// Replace the original paragraph with the container
-			p.replaceWith(container);
-		});
-
-		// Also process any internal links that might be rendered separately
-		// This handles cases where Obsidian renders [[links]] as anchor elements
-		this.processInternalLinks(el);
-	}
-
-	private processInternalLinks(el: HTMLElement) {
-		// Find all text nodes and their parent elements that might contain our pattern
-		const walker = document.createTreeWalker(
-			el,
-			NodeFilter.SHOW_TEXT,
-			null
+		const lines = sectionInfo.text.split("\n").slice(
+			sectionInfo.lineStart,
+			sectionInfo.lineEnd + 1
 		);
 
-		const nodesToProcess: { node: Text; parent: HTMLElement }[] = [];
+		const pattern = /^\[\[([^\]]+)\]\]:\s*(.*)$/;
 
-		let node;
-		while ((node = walker.nextNode())) {
-			const textNode = node as Text;
-			const parent = textNode.parentElement;
-
-			if (
-				parent &&
-				!parent.closest(".speech-bubbles-container") &&
-				!parent.closest(".speech-bubble")
-			) {
-				// Check if this might be part of a transcription line
-				const text = textNode.textContent || "";
-				if (text.includes(":") || text.startsWith("[[")) {
-					nodesToProcess.push({ node: textNode, parent });
-				}
+		let hasTranscription = false;
+		for (const line of lines) {
+			if (pattern.test(line.trim())) {
+				hasTranscription = true;
+				break;
 			}
 		}
+
+		if (!hasTranscription) {
+			return;
+		}
+
+		const container = document.createElement("div");
+		container.className = "speech-bubbles-container";
+
+		for (const line of lines) {
+			const trimmedLine = line.trim();
+			const match = trimmedLine.match(pattern);
+
+			if (match) {
+				const speakerName = match[1];
+				const message = match[2];
+
+				const bubble = this.createBubble(speakerName, message, filePath);
+				container.appendChild(bubble);
+			} else if (trimmedLine) {
+				const textEl = document.createElement("p");
+				textEl.className = "speech-bubbles-regular-text";
+				MarkdownRenderer.render(
+					this.app,
+					trimmedLine,
+					textEl,
+					filePath,
+					this.renderComponent
+				);
+				container.appendChild(textEl);
+			}
+		}
+
+		el.empty();
+		el.appendChild(container);
 	}
 
-	private createBubble(speakerName: string, message: string): HTMLElement {
+	private createBubble(speakerName: string, message: string, sourcePath: string): HTMLElement {
 		const isOwner = this.isOwner(speakerName);
 		const color = this.getSpeakerColor(speakerName);
 
@@ -277,7 +252,6 @@ export default class SpeechBubblesPlugin extends Plugin {
 			bubble.style.color = "#000000";
 		}
 
-		// Add speaker name label for non-owner bubbles
 		if (!isOwner) {
 			const nameLabel = document.createElement("div");
 			nameLabel.className = "speech-bubble-name";
@@ -286,10 +260,15 @@ export default class SpeechBubblesPlugin extends Plugin {
 			wrapper.appendChild(nameLabel);
 		}
 
-		// Add message content
 		const messageEl = document.createElement("div");
 		messageEl.className = "speech-bubble-message";
-		messageEl.textContent = message;
+		MarkdownRenderer.render(
+			this.app,
+			message,
+			messageEl,
+			sourcePath,
+			this.renderComponent
+		);
 		bubble.appendChild(messageEl);
 
 		wrapper.appendChild(bubble);
