@@ -13,6 +13,7 @@ An Obsidian plugin that renders transcription notes as message app style speech 
 ## Usage
 
 1. Format your transcription notes with lines like:
+
    ```
    [[Speaker Name]]: Message text
    ```

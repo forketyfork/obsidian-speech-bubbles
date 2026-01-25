@@ -8,6 +8,7 @@ import {
 	MarkdownRenderer,
 	Component,
 } from "obsidian";
+import { darkenColor, isOwner, SPEAKER_COLORS, OWNER_COLOR } from "./colorUtils";
 
 interface SpeechBubblesSettings {
 	ownerName: string;
@@ -18,20 +19,6 @@ const DEFAULT_SETTINGS: SpeechBubblesSettings = {
 	ownerName: "me",
 	ownerAliases: [],
 };
-
-// Predefined colors for different speakers (excluding the owner who gets a special color)
-const SPEAKER_COLORS = [
-	"#E8E8E8", // Light gray
-	"#DCF8C6", // Light green
-	"#FFF9C4", // Light yellow
-	"#FFCCBC", // Light orange
-	"#E1BEE7", // Light purple
-	"#B3E5FC", // Light blue
-	"#F0F4C3", // Light lime
-	"#FFCDD2", // Light red
-	"#D7CCC8", // Light brown
-	"#CFD8DC", // Blue gray
-];
 
 export default class SpeechBubblesPlugin extends Plugin {
 	settings: SpeechBubblesSettings;
@@ -61,11 +48,9 @@ export default class SpeechBubblesPlugin extends Plugin {
 		});
 
 		// Register the markdown post processor
-		this.registerMarkdownPostProcessor(
-			(el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-				this.processTranscription(el, ctx);
-			}
-		);
+		this.registerMarkdownPostProcessor((el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+			this.processTranscription(el, ctx);
+		});
 
 		// Add settings tab
 		this.addSettingTab(new SpeechBubblesSettingTab(this.app, this));
@@ -78,11 +63,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, (await this.loadData()) as SpeechBubblesSettings);
 	}
 
 	async saveSettings() {
@@ -90,8 +71,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	private toggleSpeechBubbles() {
-		const activeView =
-			this.app.workspace.getActiveViewOfType(MarkdownView);
+		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (!activeView) {
 			return;
 		}
@@ -117,45 +97,23 @@ export default class SpeechBubblesPlugin extends Plugin {
 		const currentMode = activeView.getMode();
 		if (currentMode === "preview") {
 			// Re-render by toggling
-			activeView.setState(
-				{ ...activeView.getState(), mode: "source" },
-				{ history: false }
-			);
+			void activeView.setState({ ...activeView.getState(), mode: "source" }, { history: false });
 			setTimeout(() => {
-				activeView.setState(
-					{ ...activeView.getState(), mode: "preview" },
-					{ history: false }
-				);
+				void activeView.setState({ ...activeView.getState(), mode: "preview" }, { history: false });
 			}, 50);
 		} else {
 			// Switch to preview mode to show bubbles
-			activeView.setState(
-				{ ...activeView.getState(), mode: "preview" },
-				{ history: false }
-			);
+			void activeView.setState({ ...activeView.getState(), mode: "preview" }, { history: false });
 		}
 	}
 
-	private isOwner(speakerName: string): boolean {
-		const normalizedName = speakerName.toLowerCase().trim();
-		const ownerName = this.settings.ownerName.toLowerCase().trim();
-
-		if (normalizedName === ownerName) {
-			return true;
-		}
-
-		for (const alias of this.settings.ownerAliases) {
-			if (normalizedName === alias.toLowerCase().trim()) {
-				return true;
-			}
-		}
-
-		return false;
+	private checkIsOwner(speakerName: string): boolean {
+		return isOwner(speakerName, this.settings.ownerName, this.settings.ownerAliases);
 	}
 
 	private getSpeakerColor(speakerName: string): string {
-		if (this.isOwner(speakerName)) {
-			return "#007AFF"; // iOS blue for owner
+		if (this.checkIsOwner(speakerName)) {
+			return OWNER_COLOR;
 		}
 
 		const normalizedName = speakerName.toLowerCase().trim();
@@ -166,13 +124,10 @@ export default class SpeechBubblesPlugin extends Plugin {
 			this.colorIndex++;
 		}
 
-		return this.speakerColorMap.get(normalizedName) || SPEAKER_COLORS[0];
+		return this.speakerColorMap.get(normalizedName) ?? SPEAKER_COLORS[0];
 	}
 
-	private processTranscription(
-		el: HTMLElement,
-		ctx: MarkdownPostProcessorContext
-	) {
+	private processTranscription(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
 		const filePath = ctx.sourcePath;
 
 		if (!this.enabledFiles.has(filePath)) {
@@ -184,10 +139,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 			return;
 		}
 
-		const lines = sectionInfo.text.split("\n").slice(
-			sectionInfo.lineStart,
-			sectionInfo.lineEnd + 1
-		);
+		const lines = sectionInfo.text.split("\n").slice(sectionInfo.lineStart, sectionInfo.lineEnd + 1);
 
 		const pattern = /^\[\[([^\]]+)\]\]:\s*(.*)$/;
 
@@ -219,13 +171,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 			} else if (trimmedLine) {
 				const textEl = document.createElement("p");
 				textEl.className = "speech-bubbles-regular-text";
-				MarkdownRenderer.render(
-					this.app,
-					trimmedLine,
-					textEl,
-					filePath,
-					this.renderComponent
-				);
+				void MarkdownRenderer.render(this.app, trimmedLine, textEl, filePath, this.renderComponent);
 				container.appendChild(textEl);
 			}
 		}
@@ -235,7 +181,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	private createBubble(speakerName: string, message: string, sourcePath: string): HTMLElement {
-		const isOwner = this.isOwner(speakerName);
+		const isOwner = this.checkIsOwner(speakerName);
 		const color = this.getSpeakerColor(speakerName);
 
 		const wrapper = document.createElement("div");
@@ -256,38 +202,18 @@ export default class SpeechBubblesPlugin extends Plugin {
 			const nameLabel = document.createElement("div");
 			nameLabel.className = "speech-bubble-name";
 			nameLabel.textContent = speakerName;
-			nameLabel.style.color = this.darkenColor(color);
+			nameLabel.style.color = darkenColor(color);
 			wrapper.appendChild(nameLabel);
 		}
 
 		const messageEl = document.createElement("div");
 		messageEl.className = "speech-bubble-message";
-		MarkdownRenderer.render(
-			this.app,
-			message,
-			messageEl,
-			sourcePath,
-			this.renderComponent
-		);
+		void MarkdownRenderer.render(this.app, message, messageEl, sourcePath, this.renderComponent);
 		bubble.appendChild(messageEl);
 
 		wrapper.appendChild(bubble);
 
 		return wrapper;
-	}
-
-	private darkenColor(hex: string): string {
-		// Convert hex to RGB, darken, and convert back
-		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-		if (!result) {
-			return "#666666";
-		}
-
-		const r = Math.max(0, parseInt(result[1], 16) - 60);
-		const g = Math.max(0, parseInt(result[2], 16) - 60);
-		const b = Math.max(0, parseInt(result[3], 16) - 60);
-
-		return `rgb(${r}, ${g}, ${b})`;
 	}
 }
 
@@ -311,11 +237,11 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 			.setDesc(
 				"The name used in transcriptions to identify you. Messages from this person will appear on the right side with blue bubbles."
 			)
-			.addText((text) =>
+			.addText(text =>
 				text
 					.setPlaceholder("me")
 					.setValue(this.plugin.settings.ownerName)
-					.onChange(async (value) => {
+					.onChange(async value => {
 						this.plugin.settings.ownerName = value;
 						await this.plugin.saveSettings();
 					})
@@ -323,18 +249,16 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Aliases")
-			.setDesc(
-				"Other names that should also be treated as you (comma-separated). For example: 'John, John Smith, JS'"
-			)
-			.addText((text) =>
+			.setDesc("Other names that should also be treated as you (comma-separated). For example: 'John, John Smith, JS'")
+			.addText(text =>
 				text
 					.setPlaceholder("John, John Smith")
 					.setValue(this.plugin.settings.ownerAliases.join(", "))
-					.onChange(async (value) => {
+					.onChange(async value => {
 						this.plugin.settings.ownerAliases = value
 							.split(",")
-							.map((s) => s.trim())
-							.filter((s) => s.length > 0);
+							.map(s => s.trim())
+							.filter(s => s.length > 0);
 						await this.plugin.saveSettings();
 					})
 			);
