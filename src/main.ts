@@ -8,7 +8,7 @@ import {
 	MarkdownRenderer,
 	Component,
 } from "obsidian";
-import { darkenColor, isOwner, SPEAKER_COLORS, OWNER_COLOR } from "./colorUtils";
+import { darkenColor, isOwner, SPEAKER_COLORS, OWNER_COLOR, SpeakerColor } from "./colorUtils";
 
 interface SpeechBubblesSettings {
 	ownerName: string;
@@ -22,7 +22,7 @@ const DEFAULT_SETTINGS: SpeechBubblesSettings = {
 
 export default class SpeechBubblesPlugin extends Plugin {
 	settings: SpeechBubblesSettings;
-	private speakerColorMap: Map<string, string> = new Map();
+	private speakerColorMap: Map<string, SpeakerColor> = new Map();
 	private colorIndex = 0;
 	private enabledFiles: Set<string> = new Set();
 	private renderComponent: Component;
@@ -149,7 +149,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 		return isOwner(speakerName, this.settings.ownerName, this.settings.ownerAliases);
 	}
 
-	private getSpeakerColor(speakerName: string): string {
+	private getSpeakerColor(speakerName: string): SpeakerColor {
 		if (this.checkIsOwner(speakerName)) {
 			return OWNER_COLOR;
 		}
@@ -219,27 +219,23 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	private createBubble(speakerName: string, message: string, sourcePath: string): HTMLElement {
-		const isOwner = this.checkIsOwner(speakerName);
+		const isOwnerBubble = this.checkIsOwner(speakerName);
 		const color = this.getSpeakerColor(speakerName);
 
 		const wrapper = document.createElement("div");
-		wrapper.className = `speech-bubble-wrapper ${isOwner ? "owner" : "other"}`;
+		wrapper.className = `speech-bubble-wrapper ${isOwnerBubble ? "owner" : "other"}`;
 
 		const bubble = document.createElement("div");
-		bubble.className = `speech-bubble ${isOwner ? "owner" : "other"}`;
+		bubble.className = `speech-bubble ${isOwnerBubble ? "owner" : "other"}`;
 
-		if (isOwner) {
-			bubble.style.backgroundColor = color;
-			bubble.style.color = "white";
-		} else {
-			bubble.style.backgroundColor = color;
-			bubble.style.color = "#000000";
-		}
+		const gradientDirection = isOwnerBubble ? "135deg" : "135deg";
+		bubble.style.background = `linear-gradient(${gradientDirection}, ${color.start}, ${color.end})`;
+		bubble.style.color = isOwnerBubble ? "white" : "#1F2937";
 
 		const nameLabel = document.createElement("div");
 		nameLabel.className = "speech-bubble-name";
 		nameLabel.textContent = speakerName;
-		nameLabel.style.color = isOwner ? "rgba(255, 255, 255, 0.85)" : darkenColor(color);
+		nameLabel.style.color = isOwnerBubble ? "rgba(255, 255, 255, 0.9)" : darkenColor(color.end);
 		bubble.appendChild(nameLabel);
 
 		const messageEl = document.createElement("div");

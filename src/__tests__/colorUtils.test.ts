@@ -78,16 +78,19 @@ describe("SPEAKER_COLORS", () => {
 		expect(SPEAKER_COLORS).toHaveLength(10);
 	});
 
-	it("should have valid hex color format", () => {
+	it("should have valid hex color format for start and end", () => {
 		const hexPattern = /^#[0-9A-Fa-f]{6}$/;
 		for (const color of SPEAKER_COLORS) {
-			expect(color).toMatch(hexPattern);
+			expect(color.start).toMatch(hexPattern);
+			expect(color.end).toMatch(hexPattern);
 		}
 	});
 });
 
 describe("OWNER_COLOR", () => {
-	it("should be iOS blue", () => {
-		expect(OWNER_COLOR).toBe("#007AFF");
+	it("should have gradient colors", () => {
+		const hexPattern = /^#[0-9A-Fa-f]{6}$/;
+		expect(OWNER_COLOR.start).toMatch(hexPattern);
+		expect(OWNER_COLOR.end).toMatch(hexPattern);
 	});
 });
