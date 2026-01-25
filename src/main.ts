@@ -131,17 +131,10 @@ export default class SpeechBubblesPlugin extends Plugin {
 		// Update button states
 		this.updateAllButtonStates();
 
-		// Force re-render by switching mode
-		const currentMode = activeView.getMode();
-		if (currentMode === "preview") {
-			// Re-render by toggling
-			void activeView.setState({ ...activeView.getState(), mode: "source" }, { history: false });
-			setTimeout(() => {
-				void activeView.setState({ ...activeView.getState(), mode: "preview" }, { history: false });
-			}, 50);
-		} else {
-			// Switch to preview mode to show bubbles
-			void activeView.setState({ ...activeView.getState(), mode: "preview" }, { history: false });
+		// Force re-render using preview mode's rerender method
+		const previewMode = (activeView as unknown as { previewMode?: { rerender: (full: boolean) => void } }).previewMode;
+		if (previewMode) {
+			previewMode.rerender(true);
 		}
 	}
 
