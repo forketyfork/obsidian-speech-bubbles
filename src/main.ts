@@ -177,15 +177,16 @@ export default class SpeechBubblesPlugin extends Plugin {
 
 		const bubble = document.createElement("div");
 		bubble.className = `speech-bubbles-bubble ${isOwnerBubble ? "speech-bubbles-owner" : "speech-bubbles-other"}`;
-
-		const gradientDirection = isOwnerBubble ? "135deg" : "135deg";
-		bubble.style.background = `linear-gradient(${gradientDirection}, ${color.start}, ${color.end})`;
-		bubble.style.color = isOwnerBubble ? "white" : "#1F2937";
+		bubble.style.setProperty("--speech-bubbles-color-start", color.start);
+		bubble.style.setProperty("--speech-bubbles-color-end", color.end);
+		bubble.style.setProperty(
+			"--speech-bubbles-name-color",
+			isOwnerBubble ? "rgba(255, 255, 255, 0.9)" : darkenColor(color.end)
+		);
 
 		const nameLabel = document.createElement("div");
 		nameLabel.className = "speech-bubbles-name";
 		nameLabel.textContent = speakerName;
-		nameLabel.style.color = isOwnerBubble ? "rgba(255, 255, 255, 0.9)" : darkenColor(color.end);
 		bubble.appendChild(nameLabel);
 
 		const messageEl = document.createElement("div");
