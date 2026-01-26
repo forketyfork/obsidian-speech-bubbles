@@ -5,97 +5,45 @@ import {
 	PluginSettingTab,
 	Setting,
 	MarkdownPostProcessorContext,
-	MarkdownRenderer,
-	Component,
+	normalizePath,
+	parseFrontMatterTags,
+	TFile,
 } from "obsidian";
 import { darkenColor, isOwner, SPEAKER_COLORS, OWNER_COLOR, SpeakerColor } from "./colorUtils";
 
 interface SpeechBubblesSettings {
 	ownerName: string;
 	ownerAliases: string[];
+	debugLogging: boolean;
 }
+
+const TRANSCRIPT_TAG = "transcript";
 
 const DEFAULT_SETTINGS: SpeechBubblesSettings = {
 	ownerName: "me",
 	ownerAliases: [],
+	debugLogging: false,
 };
 
 export default class SpeechBubblesPlugin extends Plugin {
 	settings: SpeechBubblesSettings;
 	private speakerColorMap: Map<string, SpeakerColor> = new Map();
 	private colorIndex = 0;
-	private enabledFiles: Set<string> = new Set();
-	private renderComponent: Component;
-	private viewActionButtons: WeakMap<MarkdownView, HTMLElement> = new WeakMap();
 
 	async onload() {
 		await this.loadSettings();
-
-		this.renderComponent = new Component();
-		this.renderComponent.load();
-
-		// Add command to toggle speech bubbles
-		this.addCommand({
-			id: "toggle-speech-bubbles",
-			name: "Toggle Speech Bubbles View",
-			callback: () => {
-				this.toggleSpeechBubbles();
-			},
-		});
 
 		// Register the markdown post processor
 		this.registerMarkdownPostProcessor((el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 			this.processTranscription(el, ctx);
 		});
 
-		// Add view action buttons to existing and new markdown views
-		this.app.workspace.onLayoutReady(() => {
-			this.addViewActionButtons();
-		});
-		this.registerEvent(
-			this.app.workspace.on("layout-change", () => {
-				this.addViewActionButtons();
-			})
-		);
-
 		// Add settings tab
 		this.addSettingTab(new SpeechBubblesSettingTab(this.app, this));
 	}
 
 	onunload() {
-		this.enabledFiles.clear();
 		this.speakerColorMap.clear();
-		this.renderComponent.unload();
-	}
-
-	private addViewActionButtons() {
-		this.app.workspace.iterateAllLeaves(leaf => {
-			const view = leaf.view;
-			if (view instanceof MarkdownView && !this.viewActionButtons.has(view)) {
-				const button = view.addAction("message-circle", "Toggle speech bubbles", () => {
-					this.toggleSpeechBubbles(view);
-				});
-				button.addClass("speech-bubbles-toggle");
-				this.viewActionButtons.set(view, button);
-				this.updateButtonState(view);
-			}
-		});
-	}
-
-	private updateButtonState(view: MarkdownView) {
-		const button = this.viewActionButtons.get(view);
-		if (!button || !view.file) return;
-
-		const isEnabled = this.enabledFiles.has(view.file.path);
-		button.toggleClass("speech-bubbles-active", isEnabled);
-	}
-
-	private updateAllButtonStates() {
-		this.app.workspace.iterateAllLeaves(leaf => {
-			if (leaf.view instanceof MarkdownView) {
-				this.updateButtonState(leaf.view);
-			}
-		});
 	}
 
 	async loadSettings() {
@@ -104,39 +52,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-
-	private toggleSpeechBubbles(view?: MarkdownView) {
-		const activeView = view ?? this.app.workspace.getActiveViewOfType(MarkdownView);
-		if (!activeView) {
-			return;
-		}
-
-		const file = activeView.file;
-		if (!file) {
-			return;
-		}
-
-		const filePath = file.path;
-
-		if (this.enabledFiles.has(filePath)) {
-			this.enabledFiles.delete(filePath);
-		} else {
-			this.enabledFiles.add(filePath);
-		}
-
-		// Reset color map when toggling
-		this.speakerColorMap.clear();
-		this.colorIndex = 0;
-
-		// Update button states
-		this.updateAllButtonStates();
-
-		// Force re-render using preview mode's rerender method
-		const previewMode = (activeView as unknown as { previewMode?: { rerender: (full: boolean) => void } }).previewMode;
-		if (previewMode) {
-			previewMode.rerender(true);
-		}
+		this.refreshTranscriptViews();
 	}
 
 	private checkIsOwner(speakerName: string): boolean {
@@ -160,83 +76,99 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	private processTranscription(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
-		const filePath = ctx.sourcePath;
+		const filePath = normalizePath(ctx.sourcePath);
 
-		if (!this.enabledFiles.has(filePath)) {
+		if (!this.isSpeechBubblesEnabled(filePath)) {
+			this.logDebug("Skipping transcript render (not tagged)", { filePath });
 			return;
 		}
 
-		const sectionInfo = ctx.getSectionInfo(el);
-		if (!sectionInfo) {
+		if (el.querySelector(".speech-bubbles-container")) {
 			return;
 		}
 
-		const allLines = sectionInfo.text.split("\n");
-		const lines = allLines.slice(sectionInfo.lineStart, sectionInfo.lineEnd + 1);
-
-		if (lines.length === 0) {
+		const childBlocks = Array.from(el.children).filter((node): node is HTMLElement => node instanceof HTMLElement);
+		const blocks = el.tagName === "P" ? [el] : childBlocks;
+		if (blocks.length === 0) {
+			this.logDebug("Skipping transcript render (empty section)", { filePath });
 			return;
 		}
-
-		const pattern = /^\[\[([^\]]+)\]\]:\s*(.*)$/;
 
 		let hasTranscription = false;
-		for (const line of lines) {
-			if (pattern.test(line.trim())) {
-				hasTranscription = true;
-				break;
+		const container = document.createElement("div");
+		container.className = "speech-bubbles-container";
+		let regularLines: Node[][] = [];
+
+		const flushRegularLines = () => {
+			if (regularLines.length === 0) {
+				return;
 			}
+
+			const textEl = document.createElement("div");
+			textEl.className = "speech-bubbles-regular-text";
+			for (let i = 0; i < regularLines.length; i++) {
+				if (i > 0) {
+					textEl.appendChild(document.createElement("br"));
+				}
+				for (const node of regularLines[i]) {
+					textEl.appendChild(node);
+				}
+			}
+			container.appendChild(textEl);
+			regularLines = [];
+		};
+
+		for (const block of blocks) {
+			if (block.tagName === "P") {
+				const lineNodes = this.splitNodesByLineBreaks(Array.from(block.childNodes));
+				for (const line of lineNodes) {
+					const transcription = this.extractTranscriptionFromNodes(line);
+					if (!transcription) {
+						regularLines.push(line);
+						continue;
+					}
+
+					hasTranscription = true;
+					flushRegularLines();
+
+					const bubble = this.createBubbleFromNodes(transcription.speakerName, transcription.messageNodes);
+					container.appendChild(bubble);
+				}
+				continue;
+			}
+
+			const transcription = this.extractTranscriptionFromNodes(Array.from(block.childNodes));
+			if (!transcription) {
+				flushRegularLines();
+				container.appendChild(block);
+				continue;
+			}
+
+			hasTranscription = true;
+			flushRegularLines();
+
+			const bubble = this.createBubbleFromNodes(transcription.speakerName, transcription.messageNodes);
+			container.appendChild(bubble);
 		}
 
+		flushRegularLines();
+
 		if (!hasTranscription) {
+			this.logDebug("Skipping transcript render (no transcript lines)", { filePath });
 			return;
 		}
 
-		const container = document.createElement("div");
-		container.className = "speech-bubbles-container";
+		this.logDebug("Rendering transcript bubbles", { filePath });
 
-		let nonTranscriptionLines: string[] = [];
-
-		const flushNonTranscriptionLines = () => {
-			if (nonTranscriptionLines.length === 0) return;
-
-			const content = nonTranscriptionLines.join("\n");
-			if (content.trim()) {
-				const textEl = document.createElement("div");
-				textEl.className = "speech-bubbles-regular-text";
-				try {
-					void MarkdownRenderer.render(this.app, content, textEl, filePath, this.renderComponent);
-				} catch {
-					textEl.textContent = content;
-				}
-				container.appendChild(textEl);
-			}
-			nonTranscriptionLines = [];
-		};
-
-		for (const line of lines) {
-			const match = line.trim().match(pattern);
-
-			if (match) {
-				flushNonTranscriptionLines();
-
-				const speakerName = match[1];
-				const message = match[2];
-
-				const bubble = this.createBubble(speakerName, message, filePath);
-				container.appendChild(bubble);
-			} else {
-				nonTranscriptionLines.push(line);
-			}
+		if (el.tagName === "P") {
+			el.replaceWith(container);
+		} else {
+			el.empty();
+			el.appendChild(container);
 		}
-
-		flushNonTranscriptionLines();
-
-		el.empty();
-		el.appendChild(container);
 	}
 
-	private createBubble(speakerName: string, message: string, sourcePath: string): HTMLElement {
+	private createBubbleFromNodes(speakerName: string, messageNodes: Node[]): HTMLElement {
 		const isOwnerBubble = this.checkIsOwner(speakerName);
 		const color = this.getSpeakerColor(speakerName);
 
@@ -258,16 +190,185 @@ export default class SpeechBubblesPlugin extends Plugin {
 
 		const messageEl = document.createElement("div");
 		messageEl.className = "speech-bubbles-message";
-		try {
-			void MarkdownRenderer.render(this.app, message, messageEl, sourcePath, this.renderComponent);
-		} catch {
-			messageEl.textContent = message;
+		for (const node of messageNodes) {
+			messageEl.appendChild(node);
 		}
 		bubble.appendChild(messageEl);
 
 		wrapper.appendChild(bubble);
 
 		return wrapper;
+	}
+
+	private extractTranscriptionFromNodes(nodes: Node[]): { speakerName: string; messageNodes: Node[] } | null {
+		let index = 0;
+
+		while (index < nodes.length && this.isWhitespaceNode(nodes[index])) {
+			index++;
+		}
+
+		if (index >= nodes.length) {
+			return null;
+		}
+
+		const firstNode = nodes[index];
+		if (!this.isInternalLinkNode(firstNode)) {
+			return null;
+		}
+
+		const speakerName = firstNode.textContent?.trim() ?? "";
+		if (!speakerName) {
+			return null;
+		}
+
+		let colonFound = false;
+		const messageNodes: Node[] = [];
+
+		for (let i = index + 1; i < nodes.length; i++) {
+			const node = nodes[i];
+
+			if (!colonFound) {
+				if (node.nodeType !== Node.TEXT_NODE) {
+					return null;
+				}
+
+				const text = node.textContent ?? "";
+				const colonIndex = text.indexOf(":");
+				if (colonIndex === -1) {
+					if (text.trim().length === 0) {
+						continue;
+					}
+					return null;
+				}
+
+				colonFound = true;
+				const afterColon = text.slice(colonIndex + 1).replace(/^\s+/, "");
+				if (afterColon.length > 0) {
+					messageNodes.push(document.createTextNode(afterColon));
+				}
+				continue;
+			}
+
+			messageNodes.push(node);
+		}
+
+		if (!colonFound) {
+			return null;
+		}
+
+		return { speakerName, messageNodes };
+	}
+
+	private splitNodesByLineBreaks(nodes: Node[]): Node[][] {
+		const lines: Node[][] = [];
+		let current: Node[] = [];
+
+		const pushLine = () => {
+			if (current.length > 0) {
+				lines.push(current);
+			}
+			current = [];
+		};
+
+		for (const node of nodes) {
+			if (node instanceof HTMLBRElement) {
+				pushLine();
+				continue;
+			}
+
+			if (node.nodeType === Node.TEXT_NODE) {
+				const text = node.textContent ?? "";
+				if (text.includes("\n")) {
+					const parts = text.split("\n");
+					for (let i = 0; i < parts.length; i++) {
+						if (parts[i].length > 0) {
+							current.push(document.createTextNode(parts[i]));
+						}
+						if (i < parts.length - 1) {
+							pushLine();
+						}
+					}
+					continue;
+				}
+			}
+
+			current.push(node);
+		}
+
+		if (current.length > 0) {
+			lines.push(current);
+		}
+
+		return lines;
+	}
+
+	private isInternalLinkNode(node: Node): node is HTMLElement {
+		return node instanceof HTMLElement && node.classList.contains("internal-link");
+	}
+
+	private isWhitespaceNode(node: Node): boolean {
+		return node.nodeType === Node.TEXT_NODE && (node.textContent ?? "").trim().length === 0;
+	}
+
+	private isSpeechBubblesEnabled(filePath: string): boolean {
+		return this.isEnabledByFrontmatter(filePath);
+	}
+
+	private isEnabledByFrontmatter(filePath: string): boolean {
+		const file = this.app.vault.getAbstractFileByPath(filePath);
+		if (!(file instanceof TFile)) {
+			return false;
+		}
+
+		const cache = this.app.metadataCache.getFileCache(file);
+		const tags = parseFrontMatterTags(cache?.frontmatter);
+		if (!tags || tags.length === 0) {
+			return false;
+		}
+
+		return tags.some(tag => this.normalizeTag(tag) === TRANSCRIPT_TAG);
+	}
+
+	private normalizeTag(tag: string): string {
+		return tag.replace(/^#/, "").trim().toLowerCase();
+	}
+
+	private refreshTranscriptViews() {
+		this.app.workspace.iterateAllLeaves(leaf => {
+			const view = leaf.view;
+			if (!(view instanceof MarkdownView) || !view.file) {
+				return;
+			}
+
+			const filePath = normalizePath(view.file.path);
+			if (!this.isSpeechBubblesEnabled(filePath)) {
+				return;
+			}
+
+			this.rerenderView(view);
+		});
+	}
+
+	private rerenderView(view: MarkdownView) {
+		const currentMode = view.currentMode as unknown as { rerender?: (full?: boolean) => void };
+		if (typeof currentMode.rerender === "function") {
+			currentMode.rerender(true);
+			return;
+		}
+
+		view.previewMode?.rerender(true);
+	}
+
+	private logDebug(message: string, details?: Record<string, unknown>) {
+		if (!this.settings.debugLogging) {
+			return;
+		}
+
+		if (details) {
+			console.error(`[Speech Bubbles] ${message}`, details);
+		} else {
+			console.error(`[Speech Bubbles] ${message}`);
+		}
 	}
 }
 
@@ -289,7 +390,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Your name")
 			.setDesc(
-				"The name used in transcriptions to identify you. Messages from this person will appear on the right side with blue bubbles."
+				"The name used in transcripts to identify you. Messages from this person will appear on the right side with blue bubbles."
 			)
 			.addText(text =>
 				text
@@ -317,6 +418,16 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 					})
 			);
 
+		new Setting(containerEl)
+			.setName("Enable debug logging")
+			.setDesc("Log toggle and render details to the developer console for troubleshooting.")
+			.addToggle(toggle =>
+				toggle.setValue(this.plugin.settings.debugLogging).onChange(async value => {
+					this.plugin.settings.debugLogging = value;
+					await this.plugin.saveSettings();
+				})
+			);
+
 		containerEl.createEl("h3", { text: "Usage" });
 
 		const usageDiv = containerEl.createEl("div", {
@@ -324,15 +435,15 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 		});
 
 		usageDiv.createEl("p", {
-			text: "To use speech bubbles in your transcription notes:",
+			text: "To use speech bubbles in your transcript notes:",
 		});
 
 		const list = usageDiv.createEl("ol");
 		list.createEl("li", {
-			text: "Format your transcription with lines like: [[Speaker Name]]: Message text",
+			text: "Format your transcript with lines like: [[Speaker Name]]: Message text",
 		});
 		list.createEl("li", {
-			text: "Click the message bubble icon in the view header (top right) or use the command palette to toggle speech bubbles view",
+			text: "Add the transcript tag to the note frontmatter to enable speech bubbles",
 		});
 		list.createEl("li", {
 			text: "Switch to Reading view to see the bubbles",

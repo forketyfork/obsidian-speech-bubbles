@@ -139,8 +139,3 @@ p + .speech-bubbles-container {
 .speech-bubbles-wrapper.speech-bubbles-other + .speech-bubbles-wrapper.speech-bubbles-other {
 	margin-top: -4px;
 }
-
-/* View action button active state */
-.speech-bubbles-toggle.speech-bubbles-active {
-	color: var(--interactive-accent);
-}

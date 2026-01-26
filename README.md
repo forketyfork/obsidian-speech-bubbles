@@ -1,24 +1,29 @@
 # Speech Bubbles Plugin for Obsidian
 
-An Obsidian plugin that renders transcription notes as message app style speech bubbles, similar to Apple Messages.
+An Obsidian plugin that renders transcript notes as message app style speech bubbles, similar to Apple Messages.
 
 ## Features
 
-- Renders transcription lines as speech bubbles
+- Renders transcript lines as speech bubbles
 - Different colors for different speakers
 - Right-aligned bubbles for the vault owner (configurable)
-- Toggle button to switch between normal and bubble view
 - Support for multiple speaker aliases
 
 ## Usage
 
-1. Format your transcription notes with lines like:
+1. Format your transcript notes with lines like:
 
    ```
    [[Speaker Name]]: Message text
    ```
 
-2. Click the message bubble icon (💬) in the ribbon or use the command palette ("Toggle Speech Bubbles View") to enable the bubble view.
+2. Add the `transcript` tag to the note frontmatter to enable bubbles in Reading view.
+
+   ```
+   ---
+   tags: [transcript]
+   ---
+   ```
 
 3. Switch to Reading view to see the bubbles.
 
@@ -33,8 +38,9 @@ An Obsidian plugin that renders transcription notes as message app style speech 
 
 ## Settings
 
-- **Your name**: The name used in transcriptions to identify you. Messages from this person will appear on the right side with blue bubbles (default: "me").
+- **Your name**: The name used in transcripts to identify you. Messages from this person will appear on the right side with blue bubbles (default: "me").
 - **Aliases**: Other names that should also be treated as you (comma-separated).
+- **Enable debug logging**: Logs toggle and render details to the developer console for troubleshooting.
 
 ## Installation
 
