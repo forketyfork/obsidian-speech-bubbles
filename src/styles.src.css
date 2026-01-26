@@ -1,0 +1,151 @@
+/* Speech Bubbles Plugin Styles */
+
+.speech-bubbles-container {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 10px 0;
+	max-width: 100%;
+}
+
+.speech-bubbles-wrapper {
+	display: flex;
+	flex-direction: column;
+	max-width: 75%;
+	margin-bottom: 4px;
+	animation: speech-bubbles-fade-in 0.2s ease-out;
+}
+
+.speech-bubbles-wrapper.speech-bubbles-owner {
+	align-self: flex-end;
+	align-items: flex-end;
+}
+
+.speech-bubbles-wrapper.speech-bubbles-other {
+	align-self: flex-start;
+	align-items: flex-start;
+}
+
+.speech-bubbles-name {
+	font-size: 0.7em;
+	font-weight: 600;
+	margin-bottom: 4px;
+	opacity: 0.7;
+	color: var(--speech-bubbles-name-color);
+}
+
+.speech-bubbles-bubble {
+	padding: 10px 14px;
+	border-radius: 18px;
+	position: relative;
+	word-wrap: break-word;
+	box-shadow:
+		0 2px 8px rgba(0, 0, 0, 0.08),
+		0 1px 2px rgba(0, 0, 0, 0.06);
+	background: linear-gradient(135deg, var(--speech-bubbles-color-start), var(--speech-bubbles-color-end));
+}
+
+.speech-bubbles-bubble.speech-bubbles-owner {
+	color: white;
+}
+
+.speech-bubbles-bubble.speech-bubbles-other {
+	color: #1f2937;
+}
+
+.speech-bubbles-bubble.speech-bubbles-owner {
+	border-bottom-right-radius: 4px;
+}
+
+.speech-bubbles-bubble.speech-bubbles-other {
+	border-bottom-left-radius: 4px;
+}
+
+.speech-bubbles-message {
+	font-size: 0.95em;
+	line-height: 1.4;
+}
+
+.speech-bubbles-regular-text {
+	margin: 8px 0;
+	color: var(--text-muted);
+	font-style: italic;
+	text-align: center;
+}
+
+/* Dark theme adjustments */
+.theme-dark .speech-bubbles-name {
+	opacity: 0.8;
+}
+
+/* Ensure proper spacing with other content */
+.speech-bubbles-container + p,
+p + .speech-bubbles-container {
+	margin-top: 1em;
+}
+
+/* Animation for bubble appearance */
+@keyframes speech-bubbles-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Hover effect */
+.speech-bubbles-bubble:hover {
+	filter: brightness(0.97);
+}
+
+/* Settings page styling */
+.speech-bubbles-usage {
+	margin-top: 20px;
+	padding: 15px;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.speech-bubbles-usage ol {
+	margin-left: 20px;
+}
+
+.speech-bubbles-usage li {
+	margin-bottom: 8px;
+}
+
+.speech-bubbles-usage pre {
+	background-color: var(--background-primary);
+	padding: 10px;
+	border-radius: 4px;
+	overflow-x: auto;
+}
+
+.speech-bubbles-usage code {
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+	.speech-bubbles-wrapper {
+		max-width: 85%;
+	}
+
+	.speech-bubbles-bubble {
+		padding: 8px 12px;
+	}
+
+	.speech-bubbles-message {
+		font-size: 0.9em;
+	}
+}
+
+/* Consecutive messages from same speaker - tighter spacing */
+.speech-bubbles-wrapper.speech-bubbles-owner + .speech-bubbles-wrapper.speech-bubbles-owner,
+.speech-bubbles-wrapper.speech-bubbles-other + .speech-bubbles-wrapper.speech-bubbles-other {
+	margin-top: -4px;
+}
