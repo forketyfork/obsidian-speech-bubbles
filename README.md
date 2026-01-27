@@ -74,6 +74,12 @@ npm run build
 npm run dev
 ```
 
+## My other plugins
+
+- [Food Tracker](https://github.com/forketyfork/obsidian-food-tracker): Track calories, macros, and nutrition totals with database and inline entries.
+- [YouTrack Fetcher](https://github.com/forketyfork/obsidian-youtrack-fetcher): Fetch YouTrack issues into structured notes with templates.
+- [Grazie Plugin](https://github.com/forketyfork/obsidian-grazie-plugin): Grammar and spell checking powered by JetBrains AI Platform (in development).
+
 ## License
 
 MIT
