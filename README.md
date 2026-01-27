@@ -2,6 +2,9 @@
 
 An Obsidian plugin that renders transcript notes as message app style speech bubbles, similar to Apple Messages.
 
+<img width="40%" alt="editing mode" src="https://github.com/user-attachments/assets/d7fb7f2d-456c-41c3-af14-e97cd658bd6f" />
+<img width="40%" alt="reading mode" src="https://github.com/user-attachments/assets/8a62de27-1742-424c-8f58-20e0ec53a9ea" />
+
 ## Features
 
 - Renders transcript lines as speech bubbles
