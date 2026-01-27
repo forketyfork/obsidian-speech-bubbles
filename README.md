@@ -65,13 +65,13 @@ An Obsidian plugin that renders transcript notes as message app style speech bub
 
 ```bash
 # Install dependencies
-npm install
+yarn install
 
 # Build for production
-npm run build
+yarn build
 
 # Development mode with watch
-npm run dev
+yarn dev:watch
 ```
 
 ## My other plugins
