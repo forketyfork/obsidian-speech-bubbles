@@ -1,3 +1,4 @@
+import { App } from "obsidian";
 import { ParsedBubble, SpeechBubblesSettings, SpeakerIcon } from "../types";
 import { darkenColor } from "../colorUtils";
 import { SpeakerResolver } from "../config/SpeakerResolver";
@@ -5,6 +6,7 @@ import { formatTimestamp } from "../parser/TimestampParser";
 
 export class BubbleRenderer {
 	constructor(
+		private app: App,
 		private resolver: SpeakerResolver,
 		private settings: SpeechBubblesSettings
 	) {}
@@ -75,7 +77,7 @@ export class BubbleRenderer {
 		} else {
 			avatarEl.classList.add("speech-bubbles-avatar-image");
 			const img = document.createElement("img");
-			img.src = icon.value;
+			img.src = this.app.vault.adapter.getResourcePath(icon.value);
 			img.alt = "";
 			img.className = "speech-bubbles-avatar-img";
 			avatarEl.appendChild(img);
