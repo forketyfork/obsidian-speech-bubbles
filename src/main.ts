@@ -68,7 +68,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 		const frontmatter = this.getFileFrontmatter(filePath);
 		const config = resolveConfig(this.settings, frontmatter);
 		const resolver = new SpeakerResolver(config);
-		const bubbleRenderer = new BubbleRenderer(resolver, this.settings);
+		const bubbleRenderer = new BubbleRenderer(this.app, resolver, this.settings);
 
 		let hasTranscription = false;
 		const container = document.createElement("div");
