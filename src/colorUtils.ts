@@ -1,3 +1,5 @@
+import { SpeakerColor } from "./types";
+
 export function darkenColor(hex: string): string {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	if (!result) {
@@ -9,6 +11,26 @@ export function darkenColor(hex: string): string {
 	const b = Math.max(0, parseInt(result[3], 16) - 60);
 
 	return `rgb(${r}, ${g}, ${b})`;
+}
+
+export function lightenColor(hex: string, amount: number): string {
+	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	if (!result) {
+		return hex;
+	}
+
+	const r = Math.min(255, Math.round(parseInt(result[1], 16) + (255 - parseInt(result[1], 16)) * amount));
+	const g = Math.min(255, Math.round(parseInt(result[2], 16) + (255 - parseInt(result[2], 16)) * amount));
+	const b = Math.min(255, Math.round(parseInt(result[3], 16) + (255 - parseInt(result[3], 16)) * amount));
+
+	return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+}
+
+export function hexToSpeakerColor(hex: string): SpeakerColor {
+	return {
+		start: lightenColor(hex, 0.2),
+		end: hex,
+	};
 }
 
 export function isOwner(speakerName: string, ownerName: string, ownerAliases: string[]): boolean {
@@ -26,11 +48,6 @@ export function isOwner(speakerName: string, ownerName: string, ownerAliases: st
 	}
 
 	return false;
-}
-
-export interface SpeakerColor {
-	start: string;
-	end: string;
 }
 
 export const SPEAKER_COLORS: SpeakerColor[] = [

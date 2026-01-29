@@ -1,4 +1,4 @@
-import { darkenColor, isOwner, SPEAKER_COLORS, OWNER_COLOR } from "../colorUtils";
+import { darkenColor, isOwner, lightenColor, hexToSpeakerColor, SPEAKER_COLORS, OWNER_COLOR } from "../colorUtils";
 
 describe("darkenColor", () => {
 	it("should darken a light gray color", () => {
@@ -30,6 +30,41 @@ describe("darkenColor", () => {
 		const resultLower = darkenColor("#e8e8e8");
 		const resultUpper = darkenColor("#E8E8E8");
 		expect(resultLower).toBe(resultUpper);
+	});
+});
+
+describe("lightenColor", () => {
+	it("should lighten a dark color", () => {
+		const result = lightenColor("#000000", 0.5);
+		expect(result).toBe("#808080");
+	});
+
+	it("should lighten a color by a small amount", () => {
+		const result = lightenColor("#6366F1", 0.2);
+		expect(result).toMatch(/^#[0-9a-f]{6}$/i);
+	});
+
+	it("should return the same color for invalid hex", () => {
+		const result = lightenColor("invalid", 0.5);
+		expect(result).toBe("invalid");
+	});
+
+	it("should not exceed white", () => {
+		const result = lightenColor("#FFFFFF", 0.5);
+		expect(result).toBe("#ffffff");
+	});
+});
+
+describe("hexToSpeakerColor", () => {
+	it("should create a gradient from a hex color", () => {
+		const result = hexToSpeakerColor("#6366F1");
+		expect(result.start).toMatch(/^#[0-9a-f]{6}$/i);
+		expect(result.end).toBe("#6366F1");
+	});
+
+	it("should have a lighter start than end", () => {
+		const result = hexToSpeakerColor("#000000");
+		expect(result.start).not.toBe(result.end);
 	});
 });
 
