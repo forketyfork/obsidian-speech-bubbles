@@ -394,16 +394,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:6.5.0":
-  version: 6.5.0
-  resolution: "@codemirror/state@npm:6.5.0"
-  dependencies:
-    "@marijn/find-cluster-break": "npm:^1.0.0"
-  checksum: 10c0/740425d605d7b12524e3abef242a8ca0ea1a17bab97f7583221f89c56b8f2eb236f8a227885e2bb472662b328d2a32b972fbf8543096224711679dfc3a28b492
-  languageName: node
-  linkType: hard
-
-"@codemirror/state@npm:^6.5.0":
+"@codemirror/state@npm:6.5.4, @codemirror/state@npm:^6.5.0":
   version: 6.5.4
   resolution: "@codemirror/state@npm:6.5.4"
   dependencies:
@@ -412,15 +403,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.38.6":
-  version: 6.38.6
-  resolution: "@codemirror/view@npm:6.38.6"
+"@codemirror/view@npm:6.39.13":
+  version: 6.39.13
+  resolution: "@codemirror/view@npm:6.39.13"
   dependencies:
     "@codemirror/state": "npm:^6.5.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10c0/7faa6558a991faf8acb6a74dbe5e21b6e1a83f8ace7ec7b37e8250c4e1e9f152c40978588cf2d2609c8ad7126e05ce9cae052bf345232630c300d27ccfb87493
+  checksum: 10c0/63002b5cf43aee71c366ac3220700166f47bd1e6b294204855c22c187fc781df05fd57fdac1bc118d6e6add484e33886817283ce3328682c1b4ef8936b0223bc
   languageName: node
   linkType: hard
 
@@ -1391,12 +1382,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^25.2.1":
-  version: 25.2.1
-  resolution: "@types/node@npm:25.2.1"
+"@types/node@npm:^25.2.2":
+  version: 25.2.2
+  resolution: "@types/node@npm:25.2.2"
   dependencies:
     undici-types: "npm:~7.16.0"
-  checksum: 10c0/ce42fa07495093c55b6398e3c4346d644a61b8c4f59d2e0c0ed152ea0e4327c60a41d5fdfa3e0fc4f4776eb925e2b783b6b942501fc044328a44980bc2de4dc6
+  checksum: 10c0/45aa45b00df0aac4712c2d6e934a6ed21ac54e0284dd726df1c7620b8c7d36a4fb601b9f8fe1d2951298d1ee7618cf8275688e329c295eb36e8b8fa827a8e334
   languageName: node
   linkType: hard
 
@@ -4123,11 +4114,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "obsidian-speech-bubbles@workspace:."
   dependencies:
-    "@codemirror/state": "npm:6.5.0"
-    "@codemirror/view": "npm:6.38.6"
+    "@codemirror/state": "npm:6.5.4"
+    "@codemirror/view": "npm:6.39.13"
     "@eslint/js": "npm:^10.0.1"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^25.2.1"
+    "@types/node": "npm:^25.2.2"
     "@typescript-eslint/eslint-plugin": "npm:^8.54.0"
     "@typescript-eslint/parser": "npm:^8.54.0"
     builtin-modules: "npm:^5.0.0"
