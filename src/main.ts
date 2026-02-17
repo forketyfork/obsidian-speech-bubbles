@@ -386,7 +386,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		new Setting(containerEl).setName("Speech bubbles settings").setHeading();
+		new Setting(containerEl).setName("General").setHeading();
 
 		new Setting(containerEl)
 			.setName("Your name")
@@ -395,8 +395,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 			)
 			.addText(text =>
 				text
-					// eslint-disable-next-line obsidianmd/ui/sentence-case -- literal example value, not a UI label
-					.setPlaceholder("me")
+					.setPlaceholder("Me")
 					.setValue(this.plugin.settings.ownerName)
 					.onChange(async value => {
 						this.plugin.settings.ownerName = value;
@@ -406,20 +405,15 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Aliases")
-			// eslint-disable-next-line obsidianmd/ui/sentence-case -- contains proper name examples
-			.setDesc("Other names that should also be treated as you (comma-separated), e.g. 'John, John Smith, JS'")
+			.setDesc("Other names that should also be treated as you, separated by commas")
 			.addText(text =>
-				text
-					// eslint-disable-next-line obsidianmd/ui/sentence-case -- proper name examples
-					.setPlaceholder("John, John Smith")
-					.setValue(this.plugin.settings.ownerAliases.join(", "))
-					.onChange(async value => {
-						this.plugin.settings.ownerAliases = value
-							.split(",")
-							.map(s => s.trim())
-							.filter(s => s.length > 0);
-						await this.plugin.saveSettings();
-					})
+				text.setValue(this.plugin.settings.ownerAliases.join(", ")).onChange(async value => {
+					this.plugin.settings.ownerAliases = value
+						.split(",")
+						.map(s => s.trim())
+						.filter(s => s.length > 0);
+					await this.plugin.saveSettings();
+				})
 			);
 
 		new Setting(containerEl)
@@ -455,9 +449,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		usageDiv.createEl("p", { text: "Example:" });
 
-		const codeBlock = usageDiv.createEl("pre");
-		const codeEl = codeBlock.createEl("code");
-		// eslint-disable-next-line obsidianmd/ui/sentence-case -- code example, not a UI label
-		codeEl.textContent = "[[John Smith]]: Hello!\n[[me]]: Hi there!\n[[John Smith]]: How are you doing?";
+		const codeEl = usageDiv.createEl("pre").createEl("code");
+		codeEl.appendText("[[John Smith]]: Hello!\n[[me]]: Hi there!\n[[John Smith]]: How are you doing?");
 	}
 }
