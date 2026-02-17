@@ -59,7 +59,6 @@ If you're using the Nix development environment (via `nix develop` or direnv), u
 - Strict null checks required (strictNullChecks: true)
 - No implicit any values (noImplicitAny: true)
 - Run type check with `yarn typecheck`
-- ESLint is configured with typescript-eslint plugin
 - Testing is done with Jest (`yarn test:dev`); make sure to always run the build before running the tests (`yarn test:dev` already takes care of that)
 - All tests are in the `__tests__` directory
 - Test files should end with `.test.ts`
@@ -108,3 +107,4 @@ If you're using the Nix development environment (via `nix develop` or direnv), u
 
 - **Don't use "Obsidian" in plugin name or description**: The word "Obsidian" is reserved for first-party products
 - **manifest.json**: Don't add `"main": "main.js"` entry - it's not a valid manifest field and will be flagged during review
+- **Settings headings**: Use `new Setting(containerEl).setName("...").setHeading()` instead of `containerEl.createEl("h2", ...)` or similar HTML heading elements

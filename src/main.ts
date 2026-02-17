@@ -386,7 +386,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "Speech Bubbles Settings" });
+		new Setting(containerEl).setName("Speech bubbles settings").setHeading();
 
 		new Setting(containerEl)
 			.setName("Your name")
@@ -395,6 +395,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 			)
 			.addText(text =>
 				text
+					// eslint-disable-next-line obsidianmd/ui/sentence-case -- literal example value, not a UI label
 					.setPlaceholder("me")
 					.setValue(this.plugin.settings.ownerName)
 					.onChange(async value => {
@@ -405,9 +406,11 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Aliases")
-			.setDesc("Other names that should also be treated as you (comma-separated). For example: 'John, John Smith, JS'")
+			// eslint-disable-next-line obsidianmd/ui/sentence-case -- contains proper name examples
+			.setDesc("Other names that should also be treated as you (comma-separated), e.g. 'John, John Smith, JS'")
 			.addText(text =>
 				text
+					// eslint-disable-next-line obsidianmd/ui/sentence-case -- proper name examples
 					.setPlaceholder("John, John Smith")
 					.setValue(this.plugin.settings.ownerAliases.join(", "))
 					.onChange(async value => {
@@ -429,7 +432,7 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 				})
 			);
 
-		containerEl.createEl("h3", { text: "Usage" });
+		new Setting(containerEl).setName("Usage").setHeading();
 
 		const usageDiv = containerEl.createEl("div", {
 			cls: "speech-bubbles-usage",
@@ -441,20 +444,20 @@ class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		const list = usageDiv.createEl("ol");
 		list.createEl("li", {
-			text: "Format your transcript with lines like: [[Speaker Name]]: Message text",
+			text: "Format your transcript with lines like: [[speaker name]]: message text",
 		});
 		list.createEl("li", {
 			text: "Add the transcript tag to the note frontmatter to enable speech bubbles",
 		});
 		list.createEl("li", {
-			text: "Switch to Reading view to see the bubbles",
+			text: "Switch to reading view to see the bubbles",
 		});
 
 		usageDiv.createEl("p", { text: "Example:" });
 
 		const codeBlock = usageDiv.createEl("pre");
-		codeBlock.createEl("code", {
-			text: "[[John Smith]]: Hello!\n[[me]]: Hi there!\n[[John Smith]]: How are you doing?",
-		});
+		const codeEl = codeBlock.createEl("code");
+		// eslint-disable-next-line obsidianmd/ui/sentence-case -- code example, not a UI label
+		codeEl.textContent = "[[John Smith]]: Hello!\n[[me]]: Hi there!\n[[John Smith]]: How are you doing?";
 	}
 }
