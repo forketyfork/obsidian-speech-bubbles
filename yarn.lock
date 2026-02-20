@@ -403,15 +403,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.39.14":
-  version: 6.39.14
-  resolution: "@codemirror/view@npm:6.39.14"
+"@codemirror/view@npm:6.39.15":
+  version: 6.39.15
+  resolution: "@codemirror/view@npm:6.39.15"
   dependencies:
     "@codemirror/state": "npm:^6.5.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10c0/03aaa025f9c70ce4b7a65365a84f19801a171b71391019a5d91604d3a42c8942791d3b66ebeb256d1d0aabb876f5365617d1eac9e1b3204c3686eb7408a0aa67
+  checksum: 10c0/bdcae5b2c6b86cd20c4aad6dbacb8876c83c3e4976414596477fbd185714ee3649c06b4549804495635d9427aa02316fee7eb085ee188b8a60e0aa67d09b3553
   languageName: node
   linkType: hard
 
@@ -1524,12 +1524,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^25.2.3":
-  version: 25.2.3
-  resolution: "@types/node@npm:25.2.3"
+"@types/node@npm:^25.3.0":
+  version: 25.3.0
+  resolution: "@types/node@npm:25.3.0"
   dependencies:
-    undici-types: "npm:~7.16.0"
-  checksum: 10c0/925833029ce0bb4a72c36f90b93287184d3511aeb0fa60a994ae94b5430c22f9be6693d67d210df79267cb54c6f6978caaefb149d99ab5f83af5827ba7cb9822
+    undici-types: "npm:~7.18.0"
+  checksum: 10c0/7b2b18c9d68047157367fc2f786d4f166d22dc0ad9f82331ca02fb16f2f391854123dbe604dcb938cda119c87051e4bb71dcb9ece44a579f483a6f96d4bd41de
   languageName: node
   linkType: hard
 
@@ -5580,11 +5580,11 @@ __metadata:
   resolution: "obsidian-speech-bubbles@workspace:."
   dependencies:
     "@codemirror/state": "npm:6.5.4"
-    "@codemirror/view": "npm:6.39.14"
+    "@codemirror/view": "npm:6.39.15"
     "@eslint/js": "npm:^10.0.1"
     "@eslint/json": "npm:1.0.1"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^25.2.3"
+    "@types/node": "npm:^25.3.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.56.0"
     "@typescript-eslint/parser": "npm:^8.56.0"
     builtin-modules: "npm:^5.0.0"
@@ -5618,15 +5618,15 @@ __metadata:
   linkType: hard
 
 "obsidian@npm:latest":
-  version: 1.12.0
-  resolution: "obsidian@npm:1.12.0"
+  version: 1.12.2
+  resolution: "obsidian@npm:1.12.2"
   dependencies:
     "@types/codemirror": "npm:5.60.8"
     moment: "npm:2.29.4"
   peerDependencies:
     "@codemirror/state": 6.5.0
     "@codemirror/view": 6.38.6
-  checksum: 10c0/783c537e250b4fd039210d9233be24cb1cb85b89b8ff044ab8c4510028f13c3538d28e85fd64b4188aa271de956a677528fd3e0c96062a8478f9bedcaf54d2ea
+  checksum: 10c0/e870ead0abaa784bca956f72f364e864f42902049713ebc0c3c03809cfd3929b2ff9f65f84ca9d827e8aea88801becc77c06c1de32951934c95b6c0ce316df54
   languageName: node
   linkType: hard
 
@@ -6965,6 +6965,13 @@ __metadata:
   version: 7.16.0
   resolution: "undici-types@npm:7.16.0"
   checksum: 10c0/3033e2f2b5c9f1504bdc5934646cb54e37ecaca0f9249c983f7b1fc2e87c6d18399ebb05dc7fd5419e02b2e915f734d872a65da2e3eeed1813951c427d33cc9a
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.18.0":
+  version: 7.18.2
+  resolution: "undici-types@npm:7.18.2"
+  checksum: 10c0/85a79189113a238959d7a647368e4f7c5559c3a404ebdb8fc4488145ce9426fcd82252a844a302798dfc0e37e6fb178ff481ed03bc4caf634c5757d9ef43521d
   languageName: node
   linkType: hard
 
