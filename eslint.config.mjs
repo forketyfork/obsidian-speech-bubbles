@@ -63,11 +63,11 @@ export default [
 			"@typescript-eslint/prefer-optional-chain": "error",
 			"@typescript-eslint/no-unnecessary-type-assertion": "error",
 
-			// Obsidian plugin submission rules
-			"obsidianmd/settings-tab/no-manual-html-headings": "error",
-			"obsidianmd/ui/sentence-case": "error",
-			"obsidianmd/no-sample-code": "error",
-			"obsidianmd/sample-names": "error",
+			// All Obsidian plugin submission rules, with severities from the recommended config.
+			// New rules added to the plugin are picked up automatically on version bumps.
+			...Object.fromEntries(
+				Object.entries(obsidianmd.configs.recommended).filter(([key]) => key.startsWith("obsidianmd/"))
+			),
 		},
 	},
 
@@ -83,7 +83,7 @@ export default [
 		},
 		rules: {
 			"no-unused-vars": ["error", { args: "none" }],
-			"no-console": "off", // Allow console in config files
+			"no-console": "off",
 		},
 	},
 ];
