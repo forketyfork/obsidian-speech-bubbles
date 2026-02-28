@@ -21,8 +21,6 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "Speech bubbles settings" });
-
 		new Setting(containerEl)
 			.setName("Your name")
 			.setDesc(
@@ -30,7 +28,7 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 			)
 			.addText(text =>
 				text
-					.setPlaceholder("me")
+					.setPlaceholder("Me")
 					.setValue(settings.ownerName)
 					.onChange(async value => {
 						await this.callbacks.saveSettings({ ownerName: value });
@@ -39,10 +37,10 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Aliases")
-			.setDesc("Other names that should also be treated as you (comma-separated). For example: 'John, John Smith, JS'")
+			.setDesc("Other names that should also be treated as you, separated by commas")
 			.addText(text =>
 				text
-					.setPlaceholder("John, John Smith")
+					.setPlaceholder("Alias 1, alias 2")
 					.setValue(settings.ownerAliases.join(", "))
 					.onChange(async value => {
 						const aliases = value
@@ -53,7 +51,7 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 					})
 			);
 
-		containerEl.createEl("h3", { text: "Appearance" });
+		new Setting(containerEl).setName("Appearance").setHeading();
 
 		new Setting(containerEl)
 			.setName("Maximum bubble width")
@@ -104,7 +102,7 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 			.setDesc("Custom color for your speech bubbles (leave empty for default indigo).")
 			.addText(text =>
 				text
-					.setPlaceholder("#6366F1")
+					.setPlaceholder("#6366f1")
 					.setValue(settings.ownerBubbleColor ?? "")
 					.onChange(async value => {
 						const color = value.trim() || null;
@@ -112,7 +110,7 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 					})
 			);
 
-		containerEl.createEl("h3", { text: "Debug" });
+		new Setting(containerEl).setName("Debug").setHeading();
 
 		new Setting(containerEl)
 			.setName("Enable debug logging")
@@ -123,7 +121,7 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 				})
 			);
 
-		containerEl.createEl("h3", { text: "Usage" });
+		new Setting(containerEl).setName("Usage").setHeading();
 
 		const usageDiv = containerEl.createEl("div", {
 			cls: "speech-bubbles-usage",
@@ -135,24 +133,26 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		const list = usageDiv.createEl("ol");
 		list.createEl("li", {
-			text: "Format your transcript with lines like: [[Speaker Name]]: Message text",
+			text: "Format your transcript with lines like: [[speaker name]]: message text",
 		});
 		list.createEl("li", {
 			text: "Add the transcript tag to the note frontmatter to enable speech bubbles",
 		});
 		list.createEl("li", {
-			text: "Switch to Reading view to see the bubbles",
+			text: "Switch to reading view to see the bubbles",
 		});
 
 		usageDiv.createEl("p", { text: "Example:" });
 
 		const codeBlock = usageDiv.createEl("pre");
 		codeBlock.createEl("code", {
+			// eslint-disable-next-line obsidianmd/ui/sentence-case -- code example with proper nouns
 			text: "[[John Smith]]: Hello!\n[[me]]: Hi there!\n[[John Smith]]: How are you doing?",
 		});
 
 		usageDiv.createEl("p", { text: "Advanced features:" });
 
+		/* eslint-disable obsidianmd/ui/sentence-case -- example text with proper nouns */
 		const advancedList = usageDiv.createEl("ul");
 		advancedList.createEl("li", {
 			text: "Timestamps: [[John]] [14:32]: Hello!",
@@ -163,5 +163,6 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 		advancedList.createEl("li", {
 			text: "Per-speaker colors and icons via frontmatter (see README)",
 		});
+		/* eslint-enable obsidianmd/ui/sentence-case */
 	}
 }
