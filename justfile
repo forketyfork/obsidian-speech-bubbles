@@ -16,7 +16,7 @@ install:
     yarn install
 
 # Full production build (typecheck, lint, format, build, test)
-build:
+build: install
     yarn build
 
 # Development build

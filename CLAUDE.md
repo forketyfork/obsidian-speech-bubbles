@@ -54,6 +54,45 @@ If you're using the Nix development environment (via `nix develop` or direnv), u
 - IMPORTANT: Always try to extract testable logic that can be independent of Obsidian plugins to separate classes or functions and write unit tests for it.
 - IMPORTANT: Do not write useless tests just to increase coverage, make them actually useful for catching issues in the code.
 
+## Architecture
+
+The codebase is organized into modular components:
+
+```
+src/
+  main.ts                 # Plugin entry point, orchestrates components
+  types.ts                # All TypeScript interfaces and types
+  colorUtils.ts           # Color manipulation utilities
+
+  parser/                 # Parsing logic (Obsidian-independent)
+    TranscriptParser.ts   # Orchestrates line parsing
+    FrontmatterParser.ts  # Parses speech-bubbles frontmatter config
+    TimestampParser.ts    # Parses [HH:MM] timestamps
+    DateSeparatorParser.ts # Parses --- date --- separators
+
+  config/                 # Configuration resolution
+    ConfigResolver.ts     # Merges global settings with frontmatter
+    SpeakerResolver.ts    # Resolves speaker colors, sides, icons
+
+  renderer/               # DOM rendering
+    BubbleRenderer.ts     # Creates speech bubble elements
+    DateSeparatorRenderer.ts # Creates date separator elements
+
+  settings/               # Plugin settings UI
+    SettingsTab.ts        # Obsidian settings tab
+
+  __tests__/              # Jest tests mirroring src structure
+    colorUtils.test.ts
+    parser/
+    config/
+```
+
+Key design principles:
+
+- **Separation of concerns**: Parsing, configuration, and rendering are isolated
+- **Testability**: Parser and config modules are Obsidian-independent and fully unit-tested
+- **Type safety**: All interfaces defined in `types.ts`
+
 ## Typescript & Testing
 
 - Strict null checks required (strictNullChecks: true)
@@ -85,7 +124,7 @@ If you're using the Nix development environment (via `nix develop` or direnv), u
 - All CSS classes should have the prefix `speech-bubbles-`.
 - All user data attributes should start with `data-speech-bubbles-`
 - Do not overwrite Obsidian core styling, always use custom classes or data attributes.
-- **Avoid inline styles**: Never assign styles via JavaScript (`element.style.x = y`) or inline HTML style attributes. Move all styles to CSS so themes and snippets can adapt them.
+- **Avoid inline styles**: Never assign styles via JavaScript (`element.style.x = y`) or inline HTML style attributes. Move all styles to CSS so themes and snippets can adapt them. Exception: CSS custom properties (`element.style.setProperty('--var', value)`) are acceptable for dynamic values like colors.
 
 ## Obsidian API Best Practices
 
