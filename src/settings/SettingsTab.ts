@@ -145,24 +145,20 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 		usageDiv.createEl("p", { text: "Example:" });
 
 		const codeBlock = usageDiv.createEl("pre");
-		codeBlock.createEl("code", {
-			// eslint-disable-next-line obsidianmd/ui/sentence-case -- code example with proper nouns
-			text: "[[John Smith]]: Hello!\n[[me]]: Hi there!\n[[John Smith]]: How are you doing?",
-		});
+		const codeEl = codeBlock.createEl("code");
+		const exampleLines = ["[[John Smith]]: Hello!", "[[me]]: Hi there!", "[[John Smith]]: How are you doing?"];
+		codeEl.textContent = exampleLines.join("\n");
 
 		usageDiv.createEl("p", { text: "Advanced features:" });
 
-		/* eslint-disable obsidianmd/ui/sentence-case -- example text with proper nouns */
+		const advancedItems = [
+			"Timestamps: [[John]] [14:32]: Hello!",
+			"Date separators: --- 2024-01-15 ---",
+			"Per-speaker colors and icons via frontmatter (see README)",
+		];
 		const advancedList = usageDiv.createEl("ul");
-		advancedList.createEl("li", {
-			text: "Timestamps: [[John]] [14:32]: Hello!",
-		});
-		advancedList.createEl("li", {
-			text: "Date separators: --- 2024-01-15 ---",
-		});
-		advancedList.createEl("li", {
-			text: "Per-speaker colors and icons via frontmatter (see README)",
-		});
-		/* eslint-enable obsidianmd/ui/sentence-case */
+		for (const item of advancedItems) {
+			advancedList.createEl("li", { text: item });
+		}
 	}
 }
