@@ -17,6 +17,12 @@ export class BubbleRenderer {
 		const isOwnerSide = side === "right";
 		const color = this.resolver.getSpeakerColor(speakerName);
 		const icon = this.resolver.getSpeakerIcon(speakerName);
+		const nameColor =
+			this.resolver.getSpeakerNameColor(speakerName) ??
+			(isOwnerSide ? "rgba(255, 255, 255, 0.9)" : darkenColor(color.end));
+		const nameSize = this.resolver.getSpeakerNameSize(speakerName);
+		const messageSize = this.resolver.getSpeakerMessageSize(speakerName);
+		const iconSize = this.resolver.getSpeakerIconSize(speakerName);
 
 		const wrapper = document.createElement("div");
 		wrapper.className = `speech-bubbles-wrapper ${isOwnerSide ? "speech-bubbles-owner" : "speech-bubbles-other"}`;
@@ -25,10 +31,16 @@ export class BubbleRenderer {
 		bubbleEl.className = `speech-bubbles-bubble ${isOwnerSide ? "speech-bubbles-owner" : "speech-bubbles-other"}`;
 		bubbleEl.style.setProperty("--speech-bubbles-color-start", color.start);
 		bubbleEl.style.setProperty("--speech-bubbles-color-end", color.end);
-		bubbleEl.style.setProperty(
-			"--speech-bubbles-name-color",
-			isOwnerSide ? "rgba(255, 255, 255, 0.9)" : darkenColor(color.end)
-		);
+		bubbleEl.style.setProperty("--speech-bubbles-name-color", nameColor);
+		if (nameSize) {
+			bubbleEl.style.setProperty("--speech-bubbles-name-size", nameSize);
+		}
+		if (messageSize) {
+			bubbleEl.style.setProperty("--speech-bubbles-message-size", messageSize);
+		}
+		if (iconSize) {
+			bubbleEl.style.setProperty("--speech-bubbles-icon-size", iconSize);
+		}
 
 		if (this.settings.showSpeakerNames || icon || bubble.timestamp) {
 			const headerEl = document.createElement("div");

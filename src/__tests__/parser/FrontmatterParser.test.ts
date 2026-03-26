@@ -96,6 +96,54 @@ describe("parseFrontmatter", () => {
 			expect(config?.color).toBe("#9CA3AF");
 			expect(config?.icon?.value).toBe("🧙");
 		});
+
+		it("should parse a separate speaker name color", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							color: "#9CA3AF",
+							nameColor: "#ec4899",
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.color).toBe("#9CA3AF");
+			expect(config?.nameColor).toBe("#ec4899");
+		});
+
+		it("should parse separate speaker name and message sizes", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							nameSize: "1rem",
+							messageSize: 18,
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.nameSize).toBe("1rem");
+			expect(config?.messageSize).toBe("18px");
+		});
+
+		it("should parse a speaker icon size", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							icon: "🧙",
+							iconSize: 24,
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.icon?.value).toBe("🧙");
+			expect(config?.iconSize).toBe("24px");
+		});
 	});
 
 	describe("sides", () => {

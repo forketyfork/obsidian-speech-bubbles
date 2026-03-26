@@ -11,7 +11,7 @@ An Obsidian plugin that renders transcript notes as message app style speech bub
 - Different colors for different speakers
 - Right-aligned bubbles for the vault owner (configurable)
 - Support for multiple speaker aliases
-- **Per-speaker custom colors and icons** via frontmatter
+- **Per-speaker custom colors, text sizes, and icon sizes** via frontmatter
 - **Inline timestamps** for messages
 - **Date separators** between conversation days
 - **Speaker groups/sides** for roleplay and D&D scenarios
@@ -74,7 +74,7 @@ Supported formats:
 
 ### Per-speaker customization
 
-Customize individual speakers with colors and icons via frontmatter:
+Customize individual speakers with separate bubble colors, speaker name colors, text sizes, and icons via frontmatter:
 
 ```yaml
 ---
@@ -83,16 +83,23 @@ speech-bubbles:
   speakers:
     Gandalf: "#9CA3AF" # Simple color format
     Frodo:
-      color: "#34D399" # Object format with color
-      icon: "🧙" # Emoji icon
+      color: "#1F2937" # Bubble color
+      nameColor: "#F472B6" # Speaker name color
+      nameSize: "0.85rem" # Speaker name size
+      messageSize: "1rem" # Message text size
+      icon: "🧝" # Emoji icon
+      iconSize: 22 # Bare numbers are treated as pixels
     Sauron:
       color: "#EF4444"
       icon: "[[avatars/eye.png]]" # Vault image as icon
+      iconSize: "28px"
 ---
 [[Gandalf]]: You shall not pass!
 [[Frodo]]: But I must destroy the ring...
 [[Sauron]]: I see you...
 ```
+
+`color` controls the bubble gradient. `nameColor` controls the speaker label independently. `nameSize`, `messageSize`, and `iconSize` accept any valid CSS length such as `14px`, `0.85rem`, or `1.1em`. Bare numbers are treated as pixels.
 
 ### Speaker groups/sides
 
@@ -140,11 +147,14 @@ speech-bubbles:
     DM:
       color: "#8B5CF6"
       icon: "🎲"
+      iconSize: "24px"
     Gandalf:
       color: "#9CA3AF"
+      nameColor: "#FDE68A"
       icon: "🧙"
     Frodo:
       color: "#34D399"
+      messageSize: "1rem"
   sides:
     left: ["DM"]
     right: ["Gandalf", "Frodo"]
