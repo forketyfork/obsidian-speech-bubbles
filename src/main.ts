@@ -22,6 +22,12 @@ export default class SpeechBubblesPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
+		this.registerEvent(
+			this.app.metadataCache.on("changed", file => {
+				this.refreshOpenMarkdownViewsForFile(file.path);
+			})
+		);
+
 		this.registerMarkdownPostProcessor((el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 			this.processTranscription(el, ctx);
 		});
@@ -189,18 +195,41 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	private refreshTranscriptViews() {
+		this.forEachOpenMarkdownView((view, file) => {
+			const filePath = normalizePath(file.path);
+			if (!this.isSpeechBubblesEnabled(filePath)) {
+				return;
+			}
+
+			this.rerenderView(view);
+		});
+	}
+
+	private refreshOpenMarkdownViewsForFile(filePath: string) {
+		const normalizedPath = normalizePath(filePath);
+		const speechBubblesEnabled = this.isSpeechBubblesEnabled(normalizedPath);
+
+		this.forEachOpenMarkdownView((view, file) => {
+			if (normalizePath(file.path) !== normalizedPath) {
+				return;
+			}
+
+			if (!speechBubblesEnabled && !this.viewContainsSpeechBubbles(view)) {
+				return;
+			}
+
+			this.rerenderView(view);
+		});
+	}
+
+	private forEachOpenMarkdownView(callback: (view: MarkdownView, file: TFile) => void) {
 		this.app.workspace.iterateAllLeaves(leaf => {
 			const view = leaf.view;
 			if (!(view instanceof MarkdownView) || !view.file) {
 				return;
 			}
 
-			const filePath = normalizePath(view.file.path);
-			if (!this.isSpeechBubblesEnabled(filePath)) {
-				return;
-			}
-
-			this.rerenderView(view);
+			callback(view, view.file);
 		});
 	}
 
@@ -212,6 +241,11 @@ export default class SpeechBubblesPlugin extends Plugin {
 		}
 
 		view.previewMode?.rerender(true);
+	}
+
+	private viewContainsSpeechBubbles(view: MarkdownView): boolean {
+		const previewMode = view.previewMode as unknown as { containerEl?: HTMLElement };
+		return previewMode.containerEl?.querySelector(".speech-bubbles-container") !== null;
 	}
 
 	private logDebug(message: string, details?: Record<string, unknown>) {
