@@ -139,6 +139,70 @@ describe("SpeakerResolver", () => {
 		});
 	});
 
+	describe("getSpeakerIconSize", () => {
+		it("should return null when no override is configured", () => {
+			const config = createConfig();
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerIconSize("Gandalf")).toBeNull();
+		});
+
+		it("should return the configured icon size", () => {
+			const speakerConfigs = new Map();
+			speakerConfigs.set("gandalf", { iconSize: "24px" });
+			const config = createConfig({ speakerConfigs });
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerIconSize("Gandalf")).toBe("24px");
+		});
+	});
+
+	describe("getSpeakerNameColor", () => {
+		it("should return null when no override is configured", () => {
+			const config = createConfig();
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerNameColor("Gandalf")).toBeNull();
+		});
+
+		it("should return the configured override", () => {
+			const speakerConfigs = new Map();
+			speakerConfigs.set("gandalf", { nameColor: "#ec4899" });
+			const config = createConfig({ speakerConfigs });
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerNameColor("Gandalf")).toBe("#ec4899");
+		});
+	});
+
+	describe("getSpeakerNameSize", () => {
+		it("should return null when no override is configured", () => {
+			const config = createConfig();
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerNameSize("Gandalf")).toBeNull();
+		});
+
+		it("should return the configured name size", () => {
+			const speakerConfigs = new Map();
+			speakerConfigs.set("gandalf", { nameSize: "1rem" });
+			const config = createConfig({ speakerConfigs });
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerNameSize("Gandalf")).toBe("1rem");
+		});
+	});
+
+	describe("getSpeakerMessageSize", () => {
+		it("should return null when no override is configured", () => {
+			const config = createConfig();
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerMessageSize("Gandalf")).toBeNull();
+		});
+
+		it("should return the configured message size", () => {
+			const speakerConfigs = new Map();
+			speakerConfigs.set("gandalf", { messageSize: "18px" });
+			const config = createConfig({ speakerConfigs });
+			const resolver = new SpeakerResolver(config);
+			expect(resolver.getSpeakerMessageSize("Gandalf")).toBe("18px");
+		});
+	});
+
 	describe("reset", () => {
 		it("should reset cached colors", () => {
 			const config = createConfig();

@@ -154,7 +154,7 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 		const advancedItems = [
 			"Timestamps: [[John]] [14:32]: Hello!",
 			"Date separators: --- 2024-01-15 ---",
-			"Per-speaker colors and icons via frontmatter (see README)",
+			"Per-speaker colors, sizes, and icons via frontmatter (see README)",
 		];
 		const advancedList = usageDiv.createEl("ul");
 		for (const item of advancedItems) {

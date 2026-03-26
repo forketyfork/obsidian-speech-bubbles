@@ -96,6 +96,104 @@ describe("parseFrontmatter", () => {
 			expect(config?.color).toBe("#9CA3AF");
 			expect(config?.icon?.value).toBe("🧙");
 		});
+
+		it("should parse a separate speaker name color", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							color: "#9CA3AF",
+							nameColor: "#ec4899",
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.color).toBe("#9CA3AF");
+			expect(config?.nameColor).toBe("#ec4899");
+		});
+
+		it("should parse separate speaker name and message sizes", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							nameSize: "1rem",
+							messageSize: 18,
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.nameSize).toBe("1rem");
+			expect(config?.messageSize).toBe("18px");
+		});
+
+		it("should parse a speaker icon size", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							icon: "🧙",
+							iconSize: 24,
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.icon?.value).toBe("🧙");
+			expect(config?.iconSize).toBe("24px");
+		});
+
+		it("should ignore non-string speaker text fields without throwing", () => {
+			expect(() =>
+				parseFrontmatter({
+					"speech-bubbles": {
+						speakers: {
+							Gandalf: {
+								color: 123,
+								nameColor: true,
+								icon: "🧙",
+							},
+						},
+					},
+				})
+			).not.toThrow();
+
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							color: 123,
+							nameColor: true,
+							icon: "🧙",
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.color).toBeUndefined();
+			expect(config?.nameColor).toBeUndefined();
+			expect(config?.icon?.value).toBe("🧙");
+		});
+
+		it("should treat numeric zero sizes as zero pixels", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							nameSize: 0,
+							messageSize: 0,
+							iconSize: 0,
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.nameSize).toBe("0px");
+			expect(config?.messageSize).toBe("0px");
+			expect(config?.iconSize).toBe("0px");
+		});
 	});
 
 	describe("sides", () => {
