@@ -22,6 +22,12 @@ export default class SpeechBubblesPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
+		this.registerEvent(
+			this.app.metadataCache.on("changed", file => {
+				this.refreshOpenMarkdownViewsForFile(file.path);
+			})
+		);
+
 		this.registerMarkdownPostProcessor((el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 			this.processTranscription(el, ctx);
 		});
@@ -189,18 +195,36 @@ export default class SpeechBubblesPlugin extends Plugin {
 	}
 
 	private refreshTranscriptViews() {
+		this.forEachOpenMarkdownView((view, file) => {
+			const filePath = normalizePath(file.path);
+			if (!this.isSpeechBubblesEnabled(filePath)) {
+				return;
+			}
+
+			this.rerenderView(view);
+		});
+	}
+
+	private refreshOpenMarkdownViewsForFile(filePath: string) {
+		const normalizedPath = normalizePath(filePath);
+
+		this.forEachOpenMarkdownView((view, file) => {
+			if (normalizePath(file.path) !== normalizedPath) {
+				return;
+			}
+
+			this.rerenderView(view);
+		});
+	}
+
+	private forEachOpenMarkdownView(callback: (view: MarkdownView, file: TFile) => void) {
 		this.app.workspace.iterateAllLeaves(leaf => {
 			const view = leaf.view;
 			if (!(view instanceof MarkdownView) || !view.file) {
 				return;
 			}
 
-			const filePath = normalizePath(view.file.path);
-			if (!this.isSpeechBubblesEnabled(filePath)) {
-				return;
-			}
-
-			this.rerenderView(view);
+			callback(view, view.file);
 		});
 	}
 
