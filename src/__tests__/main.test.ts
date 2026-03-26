@@ -194,19 +194,29 @@ function createMarkdownView(
 	options: {
 		currentModeRerender?: RerenderFunction;
 		previewModeRerender?: RerenderFunction;
+		hasSpeechBubbles?: boolean;
 	} = {}
 ): MockMarkdownView {
 	const view = new MarkdownView({} as never) as unknown as MockMarkdownView;
 	view.file = file;
 	view.currentMode = {} as MarkdownView["currentMode"];
-	view.previewMode = {} as MarkdownView["previewMode"];
+	const previewContainer = document.createElement("div");
+	if (options.hasSpeechBubbles) {
+		const speechBubblesContainer = document.createElement("div");
+		speechBubblesContainer.className = "speech-bubbles-container";
+		previewContainer.appendChild(speechBubblesContainer);
+	}
+	view.previewMode = { containerEl: previewContainer } as unknown as MarkdownView["previewMode"];
 
 	if (options.currentModeRerender) {
 		view.currentMode = { rerender: options.currentModeRerender } as unknown as MarkdownView["currentMode"];
 	}
 
 	if (options.previewModeRerender) {
-		view.previewMode = { rerender: options.previewModeRerender } as unknown as MarkdownView["previewMode"];
+		view.previewMode = {
+			containerEl: previewContainer,
+			rerender: options.previewModeRerender,
+		} as unknown as MarkdownView["previewMode"];
 	}
 
 	return view;
@@ -256,5 +266,54 @@ describe("SpeechBubblesPlugin metadata refresh", () => {
 		expect(currentModeRerender).toHaveBeenCalledWith(true);
 		expect(previewModeRerender).toHaveBeenCalledWith(true);
 		expect(unrelatedViewRerender).not.toHaveBeenCalled();
+	});
+
+	it("skips metadata-triggered rerenders for non-transcript notes without rendered speech bubbles", async () => {
+		const { app, leaves, addFile, emitMetadataChanged } = createApp();
+		const regularFile = addFile("notes/regular.md", {
+			frontmatter: {
+				tags: ["daily"],
+			},
+		});
+		const rerender = jest.fn<void, [boolean?]>();
+
+		leaves.push({ view: createMarkdownView(regularFile, { currentModeRerender: rerender }) });
+
+		const plugin = new SpeechBubblesPlugin(app as never, { id: "obsidian-speech-bubbles" } as never);
+		await plugin.onload();
+
+		emitMetadataChanged(regularFile);
+
+		expect(rerender).not.toHaveBeenCalled();
+	});
+
+	it("rerenders a note that just lost transcript eligibility when speech bubbles are still rendered", async () => {
+		const { app, fileCaches, leaves, addFile, emitMetadataChanged } = createApp();
+		const changedFile = addFile("transcripts/demo.md", {
+			frontmatter: {
+				tags: ["transcript"],
+			},
+		});
+		const previewModeRerender = jest.fn<void, [boolean?]>();
+
+		leaves.push({
+			view: createMarkdownView(changedFile, {
+				previewModeRerender,
+				hasSpeechBubbles: true,
+			}),
+		});
+
+		const plugin = new SpeechBubblesPlugin(app as never, { id: "obsidian-speech-bubbles" } as never);
+		await plugin.onload();
+
+		fileCaches.set(changedFile.path, {
+			frontmatter: {
+				tags: ["daily"],
+			},
+		});
+
+		emitMetadataChanged(changedFile);
+
+		expect(previewModeRerender).toHaveBeenCalledWith(true);
 	});
 });

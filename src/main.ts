@@ -207,9 +207,14 @@ export default class SpeechBubblesPlugin extends Plugin {
 
 	private refreshOpenMarkdownViewsForFile(filePath: string) {
 		const normalizedPath = normalizePath(filePath);
+		const speechBubblesEnabled = this.isSpeechBubblesEnabled(normalizedPath);
 
 		this.forEachOpenMarkdownView((view, file) => {
 			if (normalizePath(file.path) !== normalizedPath) {
+				return;
+			}
+
+			if (!speechBubblesEnabled && !this.viewContainsSpeechBubbles(view)) {
 				return;
 			}
 
@@ -236,6 +241,11 @@ export default class SpeechBubblesPlugin extends Plugin {
 		}
 
 		view.previewMode?.rerender(true);
+	}
+
+	private viewContainsSpeechBubbles(view: MarkdownView): boolean {
+		const previewMode = view.previewMode as unknown as { containerEl?: HTMLElement };
+		return previewMode.containerEl?.querySelector(".speech-bubbles-container") !== null;
 	}
 
 	private logDebug(message: string, details?: Record<string, unknown>) {
