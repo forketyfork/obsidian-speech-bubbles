@@ -76,8 +76,12 @@ function parseSpeakers(
 	return result;
 }
 
-function parseString(value: string | undefined): string | undefined {
-	const trimmedValue = value?.trim();
+function parseString(value: unknown): string | undefined {
+	if (typeof value !== "string") {
+		return undefined;
+	}
+
+	const trimmedValue = value.trim();
 	if (!trimmedValue) {
 		return undefined;
 	}
@@ -85,8 +89,8 @@ function parseString(value: string | undefined): string | undefined {
 	return trimmedValue;
 }
 
-function parseCssSize(value: string | number | undefined): string | undefined {
-	if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+function parseCssSize(value: unknown): string | undefined {
+	if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
 		return `${value}px`;
 	}
 

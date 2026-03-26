@@ -144,6 +144,56 @@ describe("parseFrontmatter", () => {
 			expect(config?.icon?.value).toBe("🧙");
 			expect(config?.iconSize).toBe("24px");
 		});
+
+		it("should ignore non-string speaker text fields without throwing", () => {
+			expect(() =>
+				parseFrontmatter({
+					"speech-bubbles": {
+						speakers: {
+							Gandalf: {
+								color: 123,
+								nameColor: true,
+								icon: "🧙",
+							},
+						},
+					},
+				})
+			).not.toThrow();
+
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							color: 123,
+							nameColor: true,
+							icon: "🧙",
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.color).toBeUndefined();
+			expect(config?.nameColor).toBeUndefined();
+			expect(config?.icon?.value).toBe("🧙");
+		});
+
+		it("should treat numeric zero sizes as zero pixels", () => {
+			const result = parseFrontmatter({
+				"speech-bubbles": {
+					speakers: {
+						Gandalf: {
+							nameSize: 0,
+							messageSize: 0,
+							iconSize: 0,
+						},
+					},
+				},
+			});
+			const config = result.speakerConfigs.get("gandalf");
+			expect(config?.nameSize).toBe("0px");
+			expect(config?.messageSize).toBe("0px");
+			expect(config?.iconSize).toBe("0px");
+		});
 	});
 
 	describe("sides", () => {
