@@ -65,13 +65,13 @@
 }
 
 .speech-bubbles-avatar-emoji {
-	font-size: 1em;
+	font-size: var(--speech-bubbles-icon-size, 1em);
 	line-height: 1;
 }
 
 .speech-bubbles-avatar-image {
-	width: 18px;
-	height: 18px;
+	width: var(--speech-bubbles-icon-size, 18px);
+	height: var(--speech-bubbles-icon-size, 18px);
 }
 
 .speech-bubbles-avatar-img {

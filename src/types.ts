@@ -32,7 +32,11 @@ export interface SpeakerIcon {
 
 export interface SpeakerConfig {
 	color?: string;
+	nameColor?: string;
+	nameSize?: string;
+	messageSize?: string;
 	icon?: SpeakerIcon;
+	iconSize?: string;
 }
 
 export interface SidesConfig {
@@ -41,7 +45,18 @@ export interface SidesConfig {
 }
 
 export interface SpeechBubblesFrontmatter {
-	speakers?: Record<string, string | { color?: string; icon?: string }>;
+	speakers?: Record<
+		string,
+		| string
+		| {
+				color?: string;
+				nameColor?: string;
+				nameSize?: string | number;
+				messageSize?: string | number;
+				icon?: string;
+				iconSize?: string | number;
+		  }
+	>;
 	sides?: {
 		left?: string[];
 		right?: string[];

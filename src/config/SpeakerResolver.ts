@@ -57,6 +57,30 @@ export class SpeakerResolver {
 		return speakerConfig?.icon ?? null;
 	}
 
+	getSpeakerIconSize(speakerName: string): string | null {
+		const normalized = speakerName.toLowerCase().trim();
+		const speakerConfig = this.config.speakerConfigs.get(normalized);
+		return speakerConfig?.iconSize ?? null;
+	}
+
+	getSpeakerNameColor(speakerName: string): string | null {
+		const normalized = speakerName.toLowerCase().trim();
+		const speakerConfig = this.config.speakerConfigs.get(normalized);
+		return speakerConfig?.nameColor ?? null;
+	}
+
+	getSpeakerNameSize(speakerName: string): string | null {
+		const normalized = speakerName.toLowerCase().trim();
+		const speakerConfig = this.config.speakerConfigs.get(normalized);
+		return speakerConfig?.nameSize ?? null;
+	}
+
+	getSpeakerMessageSize(speakerName: string): string | null {
+		const normalized = speakerName.toLowerCase().trim();
+		const speakerConfig = this.config.speakerConfigs.get(normalized);
+		return speakerConfig?.messageSize ?? null;
+	}
+
 	isOwnerSpeaker(speakerName: string): boolean {
 		return isOwner(speakerName, this.config.settings.ownerName, this.config.settings.ownerAliases);
 	}
