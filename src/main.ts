@@ -17,7 +17,7 @@ import { SpeechBubblesSettingTab } from "./settings/SettingsTab";
 const TRANSCRIPT_TAG = "transcript";
 
 export default class SpeechBubblesPlugin extends Plugin {
-	settings: SpeechBubblesSettings;
+	settings!: SpeechBubblesSettings;
 
 	async onload() {
 		await this.loadSettings();
