@@ -403,15 +403,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.41.0":
-  version: 6.41.0
-  resolution: "@codemirror/view@npm:6.41.0"
+"@codemirror/view@npm:6.41.1":
+  version: 6.41.1
+  resolution: "@codemirror/view@npm:6.41.1"
   dependencies:
     "@codemirror/state": "npm:^6.6.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10c0/7d7a5e184496d0c54083ec12bb080900064f0965b83b4db9f27890721c863e18c82e33573529799128f452c3e5c7c27af11e108c552574597ecca7eb27499a0c
+  checksum: 10c0/09fe1c114a1a35e6bfa8bd001904ff8ce5ba36f916b6517d82f48beaad05aa614a1d96b2dfe6639ce64229f9201759903836da813689a4a8439d381383f115dd
   languageName: node
   linkType: hard
 
@@ -700,7 +700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/config-array@npm:^0.23.4":
+"@eslint/config-array@npm:^0.23.5":
   version: 0.23.5
   resolution: "@eslint/config-array@npm:0.23.5"
   dependencies:
@@ -720,7 +720,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/config-helpers@npm:^0.5.4":
+"@eslint/config-helpers@npm:^0.5.5":
   version: 0.5.5
   resolution: "@eslint/config-helpers@npm:0.5.5"
   dependencies:
@@ -747,7 +747,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/core@npm:^1.2.0, @eslint/core@npm:^1.2.1":
+"@eslint/core@npm:^1.2.1":
   version: 1.2.1
   resolution: "@eslint/core@npm:1.2.1"
   dependencies:
@@ -838,7 +838,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/plugin-kit@npm:^0.7.0":
+"@eslint/plugin-kit@npm:^0.7.1":
   version: 0.7.1
   resolution: "@eslint/plugin-kit@npm:0.7.1"
   dependencies:
@@ -1454,13 +1454,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:8.56.2":
-  version: 8.56.2
-  resolution: "@types/eslint@npm:8.56.2"
+"@types/eslint@npm:9.6.1":
+  version: 9.6.1
+  resolution: "@types/eslint@npm:9.6.1"
   dependencies:
     "@types/estree": "npm:*"
     "@types/json-schema": "npm:*"
-  checksum: 10c0/e33ca87a30a9454ba9943e1270ac759996f5fe598a1c1afbaec1d1e7346a339e20bf2a9d81f177067116bbaa6cfa4f748993cb338f57978ae862ad38ffae56fe
+  checksum: 10c0/69ba24fee600d1e4c5abe0df086c1a4d798abf13792d8cfab912d76817fe1a894359a1518557d21237fbaf6eda93c5ab9309143dee4c59ef54336d1b3570420e
   languageName: node
   linkType: hard
 
@@ -3232,12 +3232,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-obsidianmd@npm:^0.1.9":
-  version: 0.1.9
-  resolution: "eslint-plugin-obsidianmd@npm:0.1.9"
+"eslint-plugin-obsidianmd@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "eslint-plugin-obsidianmd@npm:0.2.3"
   dependencies:
     "@microsoft/eslint-plugin-sdl": "npm:^1.1.0"
-    "@types/eslint": "npm:8.56.2"
+    "@types/eslint": "npm:9.6.1"
     "@types/node": "npm:20.12.12"
     eslint: "npm:>=9.0.0 <10.0.0"
     eslint-plugin-depend: "npm:1.3.1"
@@ -3245,7 +3245,8 @@ __metadata:
     eslint-plugin-json-schema-validator: "npm:5.1.0"
     eslint-plugin-security: "npm:2.1.1"
     globals: "npm:14.0.0"
-    obsidian: "npm:1.8.7"
+    obsidian: "npm:1.12.3"
+    semver: "npm:^7.7.4"
     typescript: "npm:5.4.5"
   peerDependencies:
     "@eslint/js": ^9.30.1
@@ -3255,7 +3256,7 @@ __metadata:
     typescript-eslint: ^8.35.1
   bin:
     eslint-plugin-obsidian: dist/lib/index.js
-  checksum: 10c0/971435e39c9d175af1849a3c2a10f95c0ab79ffa4259e78346197ec1c63ef1d9726d8b91865695f6c36761f2d98eaca0f674e8441eb1e502d33ad7b4d3eb8c8f
+  checksum: 10c0/cbc6b21f95476e56266bbfda5c510ffdf0da30faa184567a8759954f0188f59211617292dbf4457f8c28783e84ebc254bfb46ee08848bce4744906b2c3cde43c
   languageName: node
   linkType: hard
 
@@ -3404,16 +3405,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^10.2.0":
-  version: 10.2.0
-  resolution: "eslint@npm:10.2.0"
+"eslint@npm:^10.2.1":
+  version: 10.2.1
+  resolution: "eslint@npm:10.2.1"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.8.0"
     "@eslint-community/regexpp": "npm:^4.12.2"
-    "@eslint/config-array": "npm:^0.23.4"
-    "@eslint/config-helpers": "npm:^0.5.4"
-    "@eslint/core": "npm:^1.2.0"
-    "@eslint/plugin-kit": "npm:^0.7.0"
+    "@eslint/config-array": "npm:^0.23.5"
+    "@eslint/config-helpers": "npm:^0.5.5"
+    "@eslint/core": "npm:^1.2.1"
+    "@eslint/plugin-kit": "npm:^0.7.1"
     "@humanfs/node": "npm:^0.16.6"
     "@humanwhocodes/module-importer": "npm:^1.0.1"
     "@humanwhocodes/retry": "npm:^0.4.2"
@@ -3445,7 +3446,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 10c0/c275115f8937c243125986bf8f7d5c09bdc083f4a9fba8a77ad15a15989f05732f5037fe990cc1bc22dd887cf16060f57b8949dc5f1055d5020689adff49e219
+  checksum: 10c0/176795a3794a785502fa5cd14a9609264c2be5405552d20fed3e499bd465c29639c91ac44619ae66787b0fb7494e72d112550a2136a735d92a26bc6a7af4915c
   languageName: node
   linkType: hard
 
@@ -5742,7 +5743,7 @@ __metadata:
   resolution: "obsidian-speech-bubbles@workspace:."
   dependencies:
     "@codemirror/state": "npm:6.6.0"
-    "@codemirror/view": "npm:6.41.0"
+    "@codemirror/view": "npm:6.41.1"
     "@eslint/js": "npm:^10.0.1"
     "@eslint/json": "npm:1.2.0"
     "@types/jest": "npm:^30.0.0"
@@ -5752,8 +5753,8 @@ __metadata:
     builtin-modules: "npm:^5.1.0"
     csso-cli: "npm:^4.0.2"
     esbuild: "npm:^0.28.0"
-    eslint: "npm:^10.2.0"
-    eslint-plugin-obsidianmd: "npm:^0.1.9"
+    eslint: "npm:^10.2.1"
+    eslint-plugin-obsidianmd: "npm:^0.2.3"
     globals: "npm:^17.5.0"
     jest: "npm:^30.3.0"
     jest-environment-jsdom: "npm:^30.3.0"
@@ -5761,25 +5762,12 @@ __metadata:
     prettier: "npm:^3.8.3"
     ts-jest: "npm:^29.4.9"
     tslib: "npm:^2.8.1"
-    typescript: "npm:^6.0.2"
+    typescript: "npm:^6.0.3"
     typescript-eslint: "npm:^8.58.2"
   languageName: unknown
   linkType: soft
 
-"obsidian@npm:1.8.7":
-  version: 1.8.7
-  resolution: "obsidian@npm:1.8.7"
-  dependencies:
-    "@types/codemirror": "npm:5.60.8"
-    moment: "npm:2.29.4"
-  peerDependencies:
-    "@codemirror/state": ^6.0.0
-    "@codemirror/view": ^6.0.0
-  checksum: 10c0/b03fdaf5a2c950c9f737f2dcf830e90aa8e0565cb68f2ffcbe10dd5a02a642efa2a141095e18ee7d1ae50adbe7ab694f2e66094ebf88a7a36e7c329d034c1a05
-  languageName: node
-  linkType: hard
-
-"obsidian@npm:latest":
+"obsidian@npm:1.12.3, obsidian@npm:latest":
   version: 1.12.3
   resolution: "obsidian@npm:1.12.3"
   dependencies:
@@ -7076,13 +7064,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "typescript@npm:6.0.2"
+"typescript@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "typescript@npm:6.0.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/4b860b0bf87cc0fee0f66d8ef2640b5a8a8a8c74d1129adb82e389e5f97124383823c47946bef8a73ede371461143a3aa8544399d2133c7b2e4f07e81860af7f
+  checksum: 10c0/4a25ff5045b984370f48f196b3a0120779b1b343d40b9a68d114ea5e5fff099809b2bb777576991a63a5cd59cf7bffd96ff6fe10afcefbcb8bd6fb96ad4b6606
   languageName: node
   linkType: hard
 
@@ -7096,13 +7084,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^6.0.2#optional!builtin<compat/typescript>":
-  version: 6.0.2
-  resolution: "typescript@patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"
+"typescript@patch:typescript@npm%3A^6.0.3#optional!builtin<compat/typescript>":
+  version: 6.0.3
+  resolution: "typescript@patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/49f0b84fc6ca55653e77752b8a61beabc09ee3dae5d965c31596225aa6ef213c5727b1d2e895b900416dc603854ba0872ac4a812c2a4ed6793a601f9c675de02
+  checksum: 10c0/2f25c74e65663c248fa1ade2b8459d9ce5372ff9dad07067310f132966ebec1d93f6c42f0baf77a6b6a7a91460463f708e6887013aaade22111037457c6b25df
   languageName: node
   linkType: hard
 
