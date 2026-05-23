@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     steps:
       - uses: actions/checkout@v6
       - name: Use Node.js
@@ -26,12 +29,13 @@ jobs:
             git status --porcelain
             exit 1
           fi
-      - name: Create plugin archives
-        run: |
-          mkdir -p obsidian-speech-bubbles
-          cp main.js manifest.json styles.css obsidian-speech-bubbles/
-          zip -r obsidian-speech-bubbles.zip obsidian-speech-bubbles/
-          tar -czf obsidian-speech-bubbles.tar.gz obsidian-speech-bubbles/
+      - name: Attest build provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,4 +45,4 @@ jobs:
           gh release create "$tag" \
             --title="$tag" \
             --draft \
-            main.js manifest.json styles.css obsidian-speech-bubbles.zip obsidian-speech-bubbles.tar.gz
+            main.js manifest.json styles.css
