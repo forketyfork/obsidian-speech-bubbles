@@ -192,13 +192,13 @@ speech-bubbles:
 
 ```bash
 # Install dependencies
-yarn install
+pnpm install
 
 # Build for production
-yarn build
+pnpm build
 
 # Development mode with watch
-yarn dev:watch
+pnpm dev:watch
 ```
 
 ## My other plugins

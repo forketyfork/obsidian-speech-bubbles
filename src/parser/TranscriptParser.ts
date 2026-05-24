@@ -1,4 +1,4 @@
-import { ParsedBubble, ParsedLine, ParsedRegularText, ParsedTimestamp } from "../types";
+import { ParsedBubble, ParsedLine, ParsedTimestamp } from "../types";
 import { parseDateSeparator } from "./DateSeparatorParser";
 import { parseTimestamp } from "./TimestampParser";
 
@@ -18,7 +18,7 @@ export function parseTranscriptLine(nodes: Node[]): ParsedLine {
 	return {
 		type: "regular-text",
 		nodes: nodes,
-	} as ParsedRegularText;
+	};
 }
 
 function extractBubbleFromNodes(nodes: Node[]): ParsedBubble | null {
