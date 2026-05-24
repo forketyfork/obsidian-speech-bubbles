@@ -10,12 +10,12 @@
 		"typecheck": "tsc -noEmit -skipLibCheck",
 		"format": "prettier --write .",
 		"test": "jest",
-		"test:dev": "yarn dev && jest",
-		"test:watch": "yarn dev && jest --watch",
-		"coverage": "yarn dev && jest --coverage",
+		"test:dev": "pnpm dev && jest",
+		"test:watch": "pnpm dev && jest --watch",
+		"coverage": "pnpm dev && jest --coverage",
 		"lint": "eslint .",
-		"build": "yarn typecheck && yarn lint && yarn format && yarn prod && yarn test",
-		"ci": "yarn install --immutable",
+		"build": "pnpm typecheck && pnpm lint && pnpm format && pnpm prod && pnpm test",
+		"ci": "pnpm install --frozen-lockfile",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"build:css": "csso src/styles.src.css --output styles.css",
 		"release": "node release.mjs",
@@ -32,7 +32,13 @@
 	"engines": {
 		"node": "^20.19.0 || ^22.13.0 || >=24"
 	},
-	"packageManager": "yarn@4.12.0",
+	"packageManager": "pnpm@10.33.4",
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"unrs-resolver"
+		]
+	},
 	"devDependencies": {
 		"@codemirror/state": "6.6.0",
 		"@codemirror/view": "6.41.0",
