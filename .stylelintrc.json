@@ -1,0 +1,14 @@
+{
+	"extends": ["stylelint-config-obsidianmd"],
+	"rules": {
+		"media-feature-range-notation": "prefix",
+		"plugin/no-unsupported-browser-features": [
+			true,
+			{
+				"severity": "warning",
+				"browsers": ["electron >= 18"],
+				"ignore": ["css-nesting", "css-cascade-layers"]
+			}
+		]
+	}
+}

@@ -197,9 +197,14 @@ pnpm install
 # Build for production
 pnpm build
 
+# Lint CSS using Obsidian's official configuration
+pnpm lint:css
+
 # Development mode with watch
 pnpm dev:watch
 ```
+
+CSS linting targets the plugin's minimum supported Electron version and treats review warnings as build failures.
 
 ## My other plugins
 
