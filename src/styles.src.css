@@ -90,22 +90,22 @@
 }
 
 .speech-bubbles-owner .speech-bubbles-timestamp {
-	color: rgba(255, 255, 255, 0.6);
+	color: rgb(255 255 255 / 60%);
 }
 
 .speech-bubbles-bubble {
 	padding: var(--speech-bubbles-padding);
 	border-radius: var(--speech-bubbles-bubble-radius);
 	position: relative;
-	word-wrap: break-word;
+	overflow-wrap: break-word;
 	box-shadow:
-		0 2px 8px rgba(0, 0, 0, 0.08),
-		0 1px 2px rgba(0, 0, 0, 0.06);
+		0 2px 8px rgb(0 0 0 / 8%),
+		0 1px 2px rgb(0 0 0 / 6%);
 	background: linear-gradient(135deg, var(--speech-bubbles-color-start), var(--speech-bubbles-color-end));
 }
 
 .speech-bubbles-bubble.speech-bubbles-owner {
-	color: white;
+	color: #fff;
 }
 
 .speech-bubbles-bubble.speech-bubbles-other {
@@ -169,6 +169,7 @@ p + .speech-bubbles-container {
 		opacity: 0;
 		transform: translateY(10px);
 	}
+
 	to {
 		opacity: 1;
 		transform: translateY(0);
