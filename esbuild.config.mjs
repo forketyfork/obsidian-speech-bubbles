@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
-import builtins from "builtin-modules";
-import process from "process";
-import fs from "fs";
+import { builtinModules } from "node:module";
+import process from "node:process";
+import fs from "node:fs";
 import { minify } from "csso";
 
 const banner = `/*
@@ -30,7 +30,7 @@ const sharedOptions = {
 		"@lezer/common",
 		"@lezer/highlight",
 		"@lezer/lr",
-		...builtins,
+		...builtinModules,
 	],
 	format: "cjs",
 	target: "es2018",
