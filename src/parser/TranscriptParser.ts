@@ -71,7 +71,7 @@ function extractBubbleFromNodes(nodes: Node[]): ParsedBubble | null {
 					colonFound = true;
 					const afterColon = remaining.slice(colonIndex + 1).replace(/^\s+/, "");
 					if (afterColon.length > 0) {
-						messageNodes.push(document.createTextNode(afterColon));
+						messageNodes.push(activeDocument.createTextNode(afterColon));
 					}
 					continue;
 				}
@@ -88,7 +88,7 @@ function extractBubbleFromNodes(nodes: Node[]): ParsedBubble | null {
 			colonFound = true;
 			const afterColon = text.slice(colonIndex + 1).replace(/^\s+/, "");
 			if (afterColon.length > 0) {
-				messageNodes.push(document.createTextNode(afterColon));
+				messageNodes.push(activeDocument.createTextNode(afterColon));
 			}
 			continue;
 		}
@@ -112,7 +112,7 @@ function extractBubbleFromNodes(nodes: Node[]): ParsedBubble | null {
 }
 
 function isInternalLinkNode(node: Node): node is HTMLElement {
-	return node instanceof HTMLElement && node.classList.contains("internal-link");
+	return node.instanceOf(HTMLElement) && node.classList.contains("internal-link");
 }
 
 function isWhitespaceNode(node: Node): boolean {
@@ -131,7 +131,7 @@ export function splitNodesByLineBreaks(nodes: Node[]): Node[][] {
 	};
 
 	for (const node of nodes) {
-		if (node instanceof HTMLBRElement) {
+		if (node.instanceOf(HTMLBRElement)) {
 			pushLine();
 			continue;
 		}
@@ -142,7 +142,7 @@ export function splitNodesByLineBreaks(nodes: Node[]): Node[][] {
 				const parts = text.split("\n");
 				for (let i = 0; i < parts.length; i++) {
 					if (parts[i].length > 0) {
-						current.push(document.createTextNode(parts[i]));
+						current.push(activeDocument.createTextNode(parts[i]));
 					}
 					if (i < parts.length - 1) {
 						pushLine();
