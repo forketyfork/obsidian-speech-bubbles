@@ -123,7 +123,7 @@ export class SpeechBubblesSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl).setName("Usage").setHeading();
 
-		const usageDiv = containerEl.createEl("div", {
+		const usageDiv = containerEl.createDiv({
 			cls: "speech-bubbles-usage",
 		});
 

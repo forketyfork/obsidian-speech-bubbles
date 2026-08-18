@@ -64,7 +64,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 			return;
 		}
 
-		const childBlocks = Array.from(el.children).filter((node): node is HTMLElement => node instanceof HTMLElement);
+		const childBlocks = Array.from(el.children).filter((node): node is HTMLElement => node.instanceOf(HTMLElement));
 		const blocks = el.tagName === "P" ? [el] : childBlocks;
 		if (blocks.length === 0) {
 			this.logDebug("Skipping transcript render (empty section)", { filePath });
@@ -77,8 +77,7 @@ export default class SpeechBubblesPlugin extends Plugin {
 		const bubbleRenderer = new BubbleRenderer(this.app, resolver, this.settings);
 
 		let hasTranscription = false;
-		const container = document.createElement("div");
-		container.className = "speech-bubbles-container";
+		const container = createDiv({ cls: "speech-bubbles-container" });
 
 		if (this.settings.compactMode) {
 			container.classList.add("speech-bubbles-compact");
@@ -94,17 +93,15 @@ export default class SpeechBubblesPlugin extends Plugin {
 				return;
 			}
 
-			const textEl = document.createElement("div");
-			textEl.className = "speech-bubbles-regular-text";
+			const textEl = container.createDiv({ cls: "speech-bubbles-regular-text" });
 			for (let i = 0; i < regularLines.length; i++) {
 				if (i > 0) {
-					textEl.appendChild(document.createElement("br"));
+					textEl.createEl("br");
 				}
 				for (const node of regularLines[i]) {
 					textEl.appendChild(node);
 				}
 			}
-			container.appendChild(textEl);
 			regularLines = [];
 		};
 
